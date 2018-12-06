@@ -1,0 +1,38 @@
+{
+	"name": "babel-plugin-jsdoc-type-checker",
+	"version": "1.0.0",
+	"description": "Babel plugin for type checking based on JSDoc comments in selected environments.",
+	"main": "./dist/main.js",
+	"scripts": {
+		"build": "./node_modules/.bin/gulp build",
+		"test": "jest"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/ondrejbase/babel-plugin-jsdoc-type-checker.git"
+	},
+	"keywords": [
+		"Babel",
+		"JSDoc",
+		"type",
+		"checker"
+	],
+	"author": "Ondrej Base <ondrej.base@gmail.com>",
+	"license": "Apache-2.0",
+	"bugs": {
+		"url": "https://github.com/ondrejbase/babel-plugin-jsdoc-type-checker/issues"
+	},
+	"homepage": "https://github.com/ondrejbase/babel-plugin-jsdoc-type-checker#readme",
+	"devDependencies": {
+		"@babel/core": "^7.1.6",
+		"babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
+		"gulp": "^3.9.1",
+		"gulp-babel": "^8.0.0",
+		"jest": "^23.6.0"
+	},
+	"jest": {
+		"transform": {
+			"\\.js": "./preprocess.js"
+		}
+	}
+}

@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`main should 1`] = `
+"
+/**
+ * Class Foo.
+ */
+class Foo {
+	/**
+  * Adds up two numbers.
+  *
+  * @param {number} x A first number.
+  * @param {number} y A second number.
+  * @return The sum.
+  */
+	addUp(x, y) {
+		return x + y;
+	}
+}"
+`;
