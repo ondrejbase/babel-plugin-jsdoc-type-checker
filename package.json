@@ -25,10 +25,14 @@
 	"homepage": "https://github.com/ondrejbase/babel-plugin-jsdoc-type-checker#readme",
 	"devDependencies": {
 		"@babel/core": "^7.1.6",
+		"@babel/parser": "^7.2.0",
 		"babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
+		"comment-parser": "^0.5.0",
+		"es6-dynamic-template": "^1.0.5",
 		"gulp": "^3.9.1",
 		"gulp-babel": "^8.0.0",
-		"jest": "^23.6.0"
+		"jest": "^23.6.0",
+		"jsdoctypeparser": "^2.0.0-alpha-8"
 	},
 	"jest": {
 		"transform": {

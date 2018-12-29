@@ -1,3 +1,7 @@
+import codeGenerator from './codeGenerator';
+import Comment from './Comment';
+import Options from './Options';
+
 /**
  * TypeChecker class generates type checking code based on JSDoc comments in
  * selected environments.
@@ -12,13 +16,9 @@ class TypeChecker {
 	 */
 	getPluginObject({ types: t }) {
 		if (!t) {
-			this._error(
-				new TypeError(
-					'The first argument must be the current babel object.'
-				)
+			throw new TypeError(
+				'The first argument must be the current babel object.'
 			);
-
-			return {};
 		}
 
 		return {
@@ -27,55 +27,47 @@ class TypeChecker {
 					const { node } = path;
 					//console.log(node);
 				},
-				ClassMethod: path => {
+				ClassMethod: (path, state) => {
+					const options = new Options(state.opts);
 					const { node } = path;
 					const { leadingComments } = node;
 
-					if (!leadingComments) {
+					if (
+						!options.shouldGenerateTypeCheckingCode() ||
+						!leadingComments
+					) {
 						return;
 					}
 
-					const lastCommentBlock = leadingComments.reduce(
-						(accumulator, comment) => {
-							if (comment.type === 'CommentBlock') {
-								accumulator = comment.value;
-							}
+					let properComment;
+					[...leadingComments].reverse().some(commentBlock => {
+						if (commentBlock.type === 'CommentBlock') {
+							const comment = new Comment(
+								`/*${commentBlock.value}*/`
+							);
+							if (comment.hasTag('type-checked')) {
+								properComment = comment;
 
-							return accumulator;
+								return true;
+							}
 						}
+					});
+
+					if (!properComment) {
+						return;
+					}
+
+					const generatedNodes = codeGenerator.generateNodes(
+						options.checkingTemplate,
+						properComment
 					);
-					console.log(lastCommentBlock);
+
+					if (generatedNodes) {
+						node.body.body.unshift(...generatedNodes);
+					}
 				}
 			}
 		};
-	}
-
-	/**
-	 * Checks if this plugin should generate a type checking code.
-	 *
-	 * @param {string} [environment=process.env.NODE_ENV] The environment.
-	 * @return {boolean} `true` when it should generate a type checking code,
-	 *         otherwise `false`.
-	 */
-	_shouldGenerateTypeChecking(environment = process.env.NODE_ENV) {
-		if (!environment || typeof environment !== 'string') {
-			this._error(
-				new TypeError('Argument environment must be a string.')
-			);
-
-			return false;
-		}
-
-		return ['dev', 'test'].includes(environment);
-	}
-
-	/**
-	 * Outputs an error message.
-	 *
-	 * @param {...*} message An error message.
-	 */
-	_error(message) {
-		console.error(...message);
 	}
 }
 
