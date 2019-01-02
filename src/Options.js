@@ -1,7 +1,7 @@
 const CHECKER_TAG = 'type-checked';
 const CHECKING_TEMPLATE = `
 	if (\${condition}) {
-		throw new TypeError('\${errorMessage}');
+		throw new TypeError(\${errorMessage});
 	}`;
 const SUPPORTED_ENVIRONMENTS = ['dev', 'test'];
 

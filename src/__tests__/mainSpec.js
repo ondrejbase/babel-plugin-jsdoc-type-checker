@@ -140,6 +140,30 @@ describe('main', () => {
 		expect(code).toMatchSnapshot();
 	});
 
+	it('should prepend a type checking to Foo#processUserInput()', () => {
+		const { code } = transform(
+			`
+			/**
+			 * Class Foo.
+			 */
+			class Foo {
+				/**
+				 * Waits for a user input and then calls a callback.
+				 *
+				 * @type-checked
+				 * @param {function} callback A callback which is called with
+				 *        a user input as an argument.
+				 */
+				processUserInput(callback) {
+					var name = prompt('Please enter your name.');
+  					callback(name);
+				}
+			}`,
+			TRANSFORM_OPTIONS
+		);
+		expect(code).toMatchSnapshot();
+	});
+
 	it('should prepend a type checking to Foo#size() and Foo#size2()', () => {
 		const { code } = transform(
 			`
@@ -241,13 +265,13 @@ describe('main', () => {
 				 * string.
 				 *
 				 * @type-checked
-				 * @param {Array<string>} arr An array of strings.
+				 * @param {Array<string>=} arr An array of strings.
 				 * @return {string} [separator=','] The separator to be used.
 				 * @return {string} A String, representing the array values,
 				 *         separated by the specified separator.
 				 */
 				joinArray2(arr, separator = ',') {
-					return arr.join(separator);
+					return (arr || []).join(separator);
 				}				
 			}`,
 			TRANSFORM_OPTIONS
@@ -255,7 +279,7 @@ describe('main', () => {
 		expect(code).toMatchSnapshot();
 	});
 
-	it('should prepend a type checking to Foo#negate()', () => {
+	it('should prepend a type checking to Foo#negate() and Foo#negate2()', () => {
 		const { code } = transform(
 			`
 			/**
@@ -271,7 +295,157 @@ describe('main', () => {
 				 */
 				negate(value) {
 					return !value;
+				}
+
+				/**
+				 * Negates the given value.
+				 *
+				 * @type-checked
+				 * @param {!(boolean|number|string)=} value A value.
+				 * @return {boolean} The logically negated value.
+				 */
+				negate2(value) {
+					return !value;
 				}				
+			}`,
+			TRANSFORM_OPTIONS
+		);
+		expect(code).toMatchSnapshot();
+	});
+
+	it('should prepend a type checking to Foo#sumObj() and Foo#sumObj2()', () => {
+		const { code } = transform(
+			`
+			/**
+			 * Class Foo.
+			 */
+			class Foo {
+				/**
+				 * Returns a sum of all numbers stored in the object.
+				 *
+				 * @type-checked
+				 * @param {Object.<string, number>} obj An object with numbers
+				 *        as property values.
+				 * @return {number} The sum of all numbers.
+				 */
+				sumObj(obj) {
+					return Object.keys(obj).reduce(
+						(total, key) => total + obj[key],
+						0
+					);
+				}
+
+				/**
+				 * Returns a sum of all numbers stored in the object.
+				 *
+				 * @type-checked
+				 * @param {Object<string, number>=} obj An object with numbers
+				 *        as property values.
+				 * @return {number} The sum of all numbers.
+				 */
+				sumObj2(obj) {
+					return Object.keys(obj).reduce(
+						(total, key) => total + obj[key],
+						0
+					);
+				}
+			}`,
+			TRANSFORM_OPTIONS
+		);
+		expect(code).toMatchSnapshot();
+	});
+
+	it('should prepend a type checking to Foo#toCAB() and Foo#toCAB2()', () => {
+		const { code } = transform(
+			`
+			/**
+			 * Class Foo.
+			 */
+			class Foo {
+				/**
+				 * Returns a string representation of the object with c value
+				 * first, a value second and b value third.
+				 *
+				 * @type-checked
+				 * @param {{a: number, b: string, c}} obj An object with a, b
+				 *        and c properties.
+				 * @return {string} A string representation of the object in
+				 *         format 'cab'.
+				 */
+				toCAB(obj) {
+					const { a, b, c } = obj;
+
+					return String(c) + a + b;
+				}
+
+				/**
+				 * Returns a string representation of the object with c value
+				 * first, a value second and b value third.
+				 *
+				 * @type-checked
+				 * @param {{a: !number, b: ?string, c}=} obj An object with a, b
+				 *        and c properties.
+				 * @return {string} A string representation of the object in
+				 *         format 'cab'.
+				 */
+				toCAB2(obj) {
+					const { a, b, c } = obj || {};
+
+					return String(c) + a + b;
+				}
+			}`,
+			TRANSFORM_OPTIONS
+		);
+		expect(code).toMatchSnapshot();
+	});
+
+	it('should prepend a type checking to Foo#toCBAD() and Foo#toCBAD2', () => {
+		const { code } = transform(
+			`
+			/**
+			 * Class Foo.
+			 */
+			class Foo {
+				/**
+				 * Returns a string representation of the object with c value
+				 * first, b value second, a value third and d value fourth.
+				 *
+				 * @type-checked
+				 * @param {Object} obj An object with a, b and c properties.
+				 * @param {number} obj.a Property a.
+				 * @param {string} [obj.b] Property b.
+				 * @param {*} obj.c Property c.
+				 * @param {string} d Value d.
+				 * @return {string} A string representation of the object in
+				 *         format 'cbad'.
+				 */
+				toCBAD(obj, d) {
+					const { a, b, c } = obj;
+
+					return String(c) + b + a + d;
+				}
+
+				/**
+				 * Returns a string representation of the object with c value
+				 * first, b value second, a value third and d value fourth.
+				 *
+				 * @type-checked
+				 * @param {Object=} obj An object with a and inner properties.
+				 * @param {number=} obj.a Property a.
+				 * @param {Object=} obj.inner An inner object with b and c
+				 *        properties.
+				 * @param {?string} obj.inner.b Property b.
+				 * @param {*} obj.inner.c Property c.
+				 * @param {string} d Value d.
+				 * @return {string} A string representation of the object in
+				 *         format 'cbad'.
+				 */
+				toCBAD2(obj, d) {
+					const { a, inner } = obj || {};
+					const { b, c } = inner || {};
+
+					return String(c) + b + a + d;
+				}
 			}`,
 			TRANSFORM_OPTIONS
 		);

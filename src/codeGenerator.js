@@ -45,7 +45,7 @@ class CodeGenerator {
 		}
 
 		const codeFragments = [];
-		params.forEach((param, index) => {
+		this._joinObjectsWithProperties(params).forEach((param, index) => {
 			const { conditions, errorMessages } =
 				this._getConditionsAndMessagesByParam(param, index) || {};
 
@@ -61,7 +61,10 @@ class CodeGenerator {
 				codeFragments.push(
 					fillTemplate(template, {
 						condition,
-						errorMessage: errorMessages[index]
+						errorMessage: `'${errorMessages[index].replace(
+							/'/g,
+							"\\'"
+						)}'`
 					})
 				);
 			});
@@ -70,65 +73,30 @@ class CodeGenerator {
 		return codeFragments.join('\n');
 	}
 
-	_getConditionsAndMessagesByParam(param, index) {
-		let { name, type, optional } = param;
+	_getConditionsAndMessagesByParam(param, index, typeFlags = {}) {
+		let { name, optional } = param;
+		let flags = Object.assign(
+			{ nullable: false, notNullable: false, optional: false },
+			typeFlags
+		);
+		const { type, flags: separatedFlags } = this._separateTypeAndFlags(
+			param.type
+		);
+		Object.assign(flags, separatedFlags);
+
 		let conditions = [];
 		let errorMessages = [];
-		let nullable = false;
-		let notNullable = false;
 
-		/* The param has been defined as optional with equals sign at the end
-		 * of the param type. For example: @param {number=} x The X.
-		 */
-		if (
-			type.type === 'OPTIONAL' &&
-			type.meta &&
-			type.meta.syntax === 'SUFFIX_EQUALS_SIGN' &&
-			type.value
-		) {
-			type = type.value;
-			optional = true;
-		}
-
-		/* The param has been defined as nullable with a question mark at the
-		 * beginning of the param type. For example: @param {?number} x The X.
-		 */
-		if (
-			type.type === 'NULLABLE' &&
-			type.meta &&
-			type.meta.syntax === 'PREFIX_QUESTION_MARK' &&
-			type.value
-		) {
-			type = type.value;
-			nullable = true;
-		}
-
-		/* The param has been defined as not nullable with an asterisk at the
-		 * beginning of the param type. For example: @param {!number} x The X.
-		 */
-		if (
-			type.type === 'NOT_NULLABLE' &&
-			type.meta &&
-			type.meta.syntax === 'PREFIX_BANG' &&
-			type.value
-		) {
-			type = type.value;
-			notNullable = true;
-		}
-
-		// A type is written between ().
-		if (type.type === 'PARENTHESIS' && type.value) {
-			type = type.value;
-		}
+		optional = optional || flags.optional;
 
 		if (type.type === 'NAME') {
 			const typeName = type.name.toLowerCase();
 			const conditionPrefix = optional
 				? `${name} !== null && ${name} !== undefined &&`
 				: '';
-			const conditionSuffix = nullable
+			const conditionSuffix = flags.nullable
 				? `&& ${name} !== null`
-				: notNullable
+				: flags.notNullable
 				? `|| ${name} === null`
 				: '';
 
@@ -167,6 +135,18 @@ class CodeGenerator {
 						`Argument ${name}${
 							optional ? ' (optional)' : ''
 						} must be a boolean.`
+					);
+					break;
+				case 'function':
+					conditions.push(
+						conditionPrefix +
+							`typeof ${name} !== 'function'` +
+							conditionSuffix
+					);
+					errorMessages.push(
+						`Argument ${name}${
+							optional ? ' (optional)' : ''
+						} must be a function.`
 					);
 					break;
 				case 'array':
@@ -211,7 +191,9 @@ class CodeGenerator {
 						conditions: arrayConditions,
 						errorMessages: arrayErrorMessages
 					} = this._getConditionsAndMessagesByParam(
-						Object.assign({}, param, { type: type.subject })
+						Object.assign({}, param, { type: type.subject }),
+						index,
+						flags
 					);
 
 					if (arrayConditions && arrayErrorMessages) {
@@ -247,6 +229,79 @@ class CodeGenerator {
 
 					break;
 				}
+				case 'object': {
+					const {
+						conditions: objectConditions,
+						errorMessages: objectErrorMessages
+					} = this._getConditionsAndMessagesByParam(
+						Object.assign({}, param, { type: type.subject }),
+						index,
+						flags
+					);
+
+					if (objectConditions && objectErrorMessages) {
+						conditions = conditions.concat(objectConditions);
+						errorMessages = errorMessages.concat(
+							objectErrorMessages
+						);
+					}
+
+					if (!type.objects || !type.objects.length) {
+						return;
+					}
+
+					const objectsCount = type.objects.length;
+					const keyName = `Object.keys(${name})[0]`;
+
+					if (objectsCount === 2) {
+						let {
+							conditions: keyConditions,
+							errorMessages: keyErrorMessages
+						} = this._getConditionsAndMessagesByParam({
+							type: type.objects[0],
+							optional: false,
+							name: keyName
+						});
+
+						if (keyConditions && keyErrorMessages) {
+							keyConditions = keyConditions.map(
+								condition =>
+									`Object.prototype.toString` +
+									`.call(${name}) === '[object Object]' && ` +
+									`Object.keys && ${keyName} && ` +
+									`(${condition})`
+							);
+							conditions.push(...keyConditions);
+							errorMessages.push(...keyErrorMessages);
+						}
+					}
+
+					if (objectsCount === 1 || objectsCount === 2) {
+						const valueName = `${name}[${keyName}]`;
+						let {
+							conditions: valueConditions,
+							errorMessages: valueErrorMessages
+						} = this._getConditionsAndMessagesByParam({
+							type: type.objects[objectsCount - 1],
+							optional: false,
+							name: valueName
+						});
+
+						if (valueConditions && valueErrorMessages) {
+							valueConditions = valueConditions.map(
+								condition =>
+									`Object.prototype.toString` +
+									`.call(${name}) === '[object Object]' && ` +
+									`Object.keys && ${keyName} && ` +
+									`${valueName} && (${condition})`
+							);
+							conditions.push(...valueConditions);
+							errorMessages.push(...valueErrorMessages);
+						}
+					}
+
+					break;
+				}
 				default:
 					return null;
 			}
@@ -261,13 +316,17 @@ class CodeGenerator {
 				conditions: leftConditions,
 				errorMessages: leftErrorMessages
 			} = this._getConditionsAndMessagesByParam(
-				Object.assign({}, param, { type: type.left })
+				Object.assign({}, param, { type: type.left }),
+				index,
+				flags
 			);
 			const {
 				conditions: rightConditions,
 				errorMessages: rightErrorMessages
 			} = this._getConditionsAndMessagesByParam(
-				Object.assign({}, param, { type: type.right })
+				Object.assign({}, param, { type: type.right }),
+				index,
+				flags
 			);
 
 			if (
@@ -314,9 +373,243 @@ class CodeGenerator {
 				conditions.push(...rightConditions);
 				errorMessages.push(...rightErrorMessages);
 			}
+		} else if (type.type === 'RECORD' && type.entries) {
+			const {
+				conditions: objectConditions,
+				errorMessages: objectErrorMessages
+			} = this._getConditionsAndMessagesByParam(
+				Object.assign({}, param, {
+					type: { type: 'NAME', name: 'object' }
+				}),
+				index,
+				flags
+			);
+
+			if (objectConditions && objectErrorMessages) {
+				conditions.push(...objectConditions);
+				errorMessages.push(...objectErrorMessages);
+			}
+
+			type.entries.forEach(entry => {
+				if (
+					entry.type !== 'RECORD_ENTRY' ||
+					!entry.key ||
+					!entry.value
+				) {
+					return;
+				}
+
+				let {
+					conditions: entryConditions,
+					errorMessages: entryErrorMessages
+				} = this._getConditionsAndMessagesByParam({
+					type: entry.value,
+					optional: entry.optional || false,
+					name: `${name}['${entry.key}']`
+				});
+
+				if (!entryConditions || !entryErrorMessages) {
+					return;
+				}
+
+				entryConditions = entryConditions.map(
+					condition =>
+						`Object.prototype.toString` +
+						`.call(${name}) === '[object Object]' && ` +
+						`('${entry.key}' in ${name}) && (${condition})`
+				);
+
+				conditions.push(...entryConditions);
+				errorMessages.push(...entryErrorMessages);
+			});
 		}
 
 		return { conditions, errorMessages };
+	}
+
+	_separateTypeAndFlags(type) {
+		let t = type;
+		const flags = {};
+
+		/* The type has been defined as optional with equals sign at the end of
+		 * the type. For example: @param {number=} x The X.
+		 */
+		if (
+			t.type === 'OPTIONAL' &&
+			t.meta &&
+			t.meta.syntax === 'SUFFIX_EQUALS_SIGN' &&
+			t.value
+		) {
+			t = t.value;
+			flags.optional = true;
+		}
+
+		/* The type has been defined as nullable with a question mark at the
+		 * beginning of the type. For example: @param {?number} x The X.
+		 */
+		if (
+			t.type === 'NULLABLE' &&
+			t.meta &&
+			t.meta.syntax === 'PREFIX_QUESTION_MARK' &&
+			t.value
+		) {
+			t = t.value;
+			flags.nullable = true;
+		}
+
+		/* The type has been defined as not nullable with an asterisk at the
+		 * beginning of the param type. For example: @param {!number} x The X.
+		 */
+		if (
+			t.type === 'NOT_NULLABLE' &&
+			t.meta &&
+			t.meta.syntax === 'PREFIX_BANG' &&
+			t.value
+		) {
+			t = t.value;
+			flags.notNullable = true;
+		}
+
+		// A type is written between ().
+		if (t.type === 'PARENTHESIS' && t.value) {
+			t = t.value;
+		}
+
+		return { type: t, flags };
+	}
+
+	_addFlagsToType(flags, type) {
+		const { flags: f, type: t } = this._separateTypeAndFlags(type);
+		const { notNullable, nullable, optional } = Object.assign({}, f, flags);
+		let resultType = t;
+
+		if (notNullable) {
+			resultType = {
+				type: 'NOT_NULLABLE',
+				meta: {
+					syntax: 'PREFIX_BANG'
+				},
+				value: resultType
+			};
+		}
+
+		if (nullable) {
+			resultType = {
+				type: 'NULLABLE',
+				meta: {
+					syntax: 'PREFIX_QUESTION_MARK'
+				},
+				value: resultType
+			};
+		}
+
+		if (optional) {
+			resultType = {
+				type: 'OPTIONAL',
+				meta: {
+					syntax: 'SUFFIX_EQUALS_SIGN'
+				},
+				value: resultType
+			};
+		}
+
+		return resultType;
+	}
+
+	_joinObjectsWithProperties(params) {
+		const propertyNames = [];
+		const rootRecords = params
+			.filter(
+				({ name, type }) =>
+					!name.includes('.') && this._isObjectType(type)
+			)
+			.map(param => {
+				const { name, type } = param;
+				const { flags } = this._separateTypeAndFlags(type);
+				const { entries, names } = this._getObjectProperties(
+					params,
+					name
+				);
+
+				if (entries.length > 0) {
+					propertyNames.push(...names);
+
+					return Object.assign({}, param, {
+						type: this._addFlagsToType(flags, {
+							type: 'RECORD',
+							entries
+						})
+					});
+				}
+
+				return param;
+			});
+
+		return params
+			.filter(({ name }) => !propertyNames.includes(name))
+			.map(param => {
+				const record = rootRecords.find(
+					record => record.name === param.name
+				);
+
+				if (record) {
+					return record;
+				} else {
+					return param;
+				}
+			});
+	}
+
+	_getObjectProperties(params, objName) {
+		const properties = params.filter(
+			({ name }) =>
+				name.indexOf(`${objName}.`) === 0 &&
+				!name.replace(`${objName}.`, '').includes('.')
+		);
+		const names = [];
+		const entries = properties.map(param => {
+			const { name, type } = param;
+			const key = name.replace(`${objName}.`, '');
+			const isObject = this._isObjectType(type);
+			const { flags } = this._separateTypeAndFlags(type);
+			let innerEntries;
+			names.push(name);
+
+			if (isObject) {
+				const {
+					entries,
+					names: innerNames
+				} = this._getObjectProperties(params, name);
+				innerEntries = entries;
+				names.push(...innerNames);
+			}
+
+			return Object.assign({}, param, {
+				type: 'RECORD_ENTRY',
+				key,
+				value:
+					innerEntries && innerEntries.length > 0
+						? this._addFlagsToType(flags, {
+								type: 'RECORD',
+								entries: innerEntries
+						  })
+						: type
+			});
+		});
+
+		return { entries, names };
+	}
+
+	_isObjectType(type) {
+		const { type: t } = this._separateTypeAndFlags(type);
+
+		return (
+			(t.type === 'NAME' && t.name.toLowerCase() === 'object') ||
+			(t.type === 'GENERIC' &&
+				t.subject &&
+				t.subject.type === 'NAME' &&
+				t.subject.name.toLowerCase() === 'object')
+		);
 	}
 }
 
