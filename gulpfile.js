@@ -3,7 +3,7 @@ const babel = require('gulp-babel');
 
 const transformJs = () =>
 	gulp
-		.src('./src/main.js')
+		.src('./src/*.js')
 		.pipe(
 			babel({
 				plugins: ['transform-es2015-modules-commonjs']
