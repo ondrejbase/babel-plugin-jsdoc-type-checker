@@ -37,6 +37,9 @@
 		"jest": "^23.6.0",
 		"jsdoctypeparser": "^2.0.0-alpha-8"
 	},
+	"peerDependencies": {
+		"es6-dynamic-template": "1.x"
+	},
 	"jest": {
 		"transform": {
 			"\\.js": "./preprocess.js"
