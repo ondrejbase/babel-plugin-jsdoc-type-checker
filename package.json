@@ -7,6 +7,9 @@
 		"build": "./node_modules/.bin/gulp build",
 		"test": "jest"
 	},
+	"publishConfig": {
+		"registry": "http://registry.npmjs.org/"
+	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/ondrejbase/babel-plugin-jsdoc-type-checker.git"
