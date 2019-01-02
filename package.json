@@ -38,7 +38,9 @@
 		"jsdoctypeparser": "^2.0.0-alpha-8"
 	},
 	"peerDependencies": {
-		"es6-dynamic-template": "1.x"
+		"comment-parser": "0.x",
+		"es6-dynamic-template": "1.x",
+		"jsdoctypeparser": "2.x"
 	},
 	"jest": {
 		"transform": {
