@@ -23,35 +23,26 @@ class TypeChecker {
 
 		return {
 			visitor: {
-				ClassDeclaration: path => {
-					const { node } = path;
-					//console.log(node);
-				},
 				ClassMethod: (path, state) => {
 					const options = new Options(state.opts);
-					const { node } = path;
-					const { leadingComments } = node;
 
-					if (
-						!options.shouldGenerateTypeCheckingCode() ||
-						!leadingComments
-					) {
+					if (!options.shouldGenerateTypeCheckingCode()) {
 						return;
 					}
 
-					let properComment;
-					[...leadingComments].reverse().some(commentBlock => {
-						if (commentBlock.type === 'CommentBlock') {
-							const comment = new Comment(
-								`/*${commentBlock.value}*/`
-							);
-							if (comment.hasTag('type-checked')) {
-								properComment = comment;
-
-								return true;
-							}
-						}
-					});
+					const { node: classNode } = path.findParent(
+						({ node }) => node && node.type === 'ClassDeclaration'
+					);
+					const properClassComment = this._findProperComment(
+						classNode,
+						options
+					);
+					const { node } = path;
+					const properComment = this._findProperComment(
+						node,
+						options,
+						!properClassComment
+					);
 
 					if (!properComment) {
 						return;
@@ -68,6 +59,29 @@ class TypeChecker {
 				}
 			}
 		};
+	}
+
+	_findProperComment(node, options, mustHaveCheckerTag = true) {
+		const { leadingComments } = node;
+
+		if (!leadingComments) {
+			return null;
+		}
+
+		let properComment = null;
+		[...leadingComments].reverse().some(commentBlock => {
+			if (commentBlock.type === 'CommentBlock') {
+				const comment = new Comment(`/*${commentBlock.value}*/`);
+
+				if (!mustHaveCheckerTag || comment.hasTag(options.checkerTag)) {
+					properComment = comment;
+
+					return true;
+				}
+			}
+		});
+
+		return properComment;
 	}
 }
 

@@ -87,9 +87,9 @@ class CodeGenerator {
 		let conditions = [];
 		let errorMessages = [];
 
-		optional = optional || flags.optional;
-
 		if (type.type === 'NAME') {
+			optional = optional || flags.optional;
+
 			const typeName = type.name.toLowerCase();
 			const conditionPrefix = optional
 				? `${name} !== null && ${name} !== undefined &&`
@@ -190,42 +190,14 @@ class CodeGenerator {
 					const {
 						conditions: arrayConditions,
 						errorMessages: arrayErrorMessages
-					} = this._getConditionsAndMessagesByParam(
-						Object.assign({}, param, { type: type.subject }),
+					} = this._getConditionsAndMessagesForArray(
+						param,
 						index,
-						flags
+						flags,
+						type
 					);
-
-					if (arrayConditions && arrayErrorMessages) {
-						conditions = conditions.concat(arrayConditions);
-						errorMessages = errorMessages.concat(
-							arrayErrorMessages
-						);
-					}
-
-					if (!type.objects || !type.objects.length) {
-						break;
-					}
-
-					let {
-						conditions: itemConditions,
-						errorMessages: itemErrorMessages
-					} = this._getConditionsAndMessagesByParam({
-						type: type.objects[0],
-						optional: false,
-						name: `${name}[0]`
-					});
-
-					if (itemConditions && itemErrorMessages) {
-						itemConditions = itemConditions.map(
-							condition =>
-								`Object.prototype.toString` +
-								`.call(${name}) === '[object Array]' &&` +
-								`${name}.length > 0 && (${condition})`
-						);
-						conditions = conditions.concat(itemConditions);
-						errorMessages = errorMessages.concat(itemErrorMessages);
-					}
+					conditions.push(...arrayConditions);
+					errorMessages.push(...arrayErrorMessages);
 
 					break;
 				}
@@ -233,72 +205,14 @@ class CodeGenerator {
 					const {
 						conditions: objectConditions,
 						errorMessages: objectErrorMessages
-					} = this._getConditionsAndMessagesByParam(
-						Object.assign({}, param, { type: type.subject }),
+					} = this._getConditionsAndMessagesForObject(
+						param,
 						index,
-						flags
+						flags,
+						type
 					);
-
-					if (objectConditions && objectErrorMessages) {
-						conditions = conditions.concat(objectConditions);
-						errorMessages = errorMessages.concat(
-							objectErrorMessages
-						);
-					}
-
-					if (!type.objects || !type.objects.length) {
-						return;
-					}
-
-					const objectsCount = type.objects.length;
-					const keyName = `Object.keys(${name})[0]`;
-
-					if (objectsCount === 2) {
-						let {
-							conditions: keyConditions,
-							errorMessages: keyErrorMessages
-						} = this._getConditionsAndMessagesByParam({
-							type: type.objects[0],
-							optional: false,
-							name: keyName
-						});
-
-						if (keyConditions && keyErrorMessages) {
-							keyConditions = keyConditions.map(
-								condition =>
-									`Object.prototype.toString` +
-									`.call(${name}) === '[object Object]' && ` +
-									`Object.keys && ${keyName} && ` +
-									`(${condition})`
-							);
-							conditions.push(...keyConditions);
-							errorMessages.push(...keyErrorMessages);
-						}
-					}
-
-					if (objectsCount === 1 || objectsCount === 2) {
-						const valueName = `${name}[${keyName}]`;
-						let {
-							conditions: valueConditions,
-							errorMessages: valueErrorMessages
-						} = this._getConditionsAndMessagesByParam({
-							type: type.objects[objectsCount - 1],
-							optional: false,
-							name: valueName
-						});
-
-						if (valueConditions && valueErrorMessages) {
-							valueConditions = valueConditions.map(
-								condition =>
-									`Object.prototype.toString` +
-									`.call(${name}) === '[object Object]' && ` +
-									`Object.keys && ${keyName} && ` +
-									`${valueName} && (${condition})`
-							);
-							conditions.push(...valueConditions);
-							errorMessages.push(...valueErrorMessages);
-						}
-					}
+					conditions.push(...objectConditions);
+					errorMessages.push(...objectErrorMessages);
 
 					break;
 				}
@@ -313,116 +227,273 @@ class CodeGenerator {
 			type.right
 		) {
 			const {
-				conditions: leftConditions,
-				errorMessages: leftErrorMessages
-			} = this._getConditionsAndMessagesByParam(
-				Object.assign({}, param, { type: type.left }),
+				conditions: unionConditions,
+				errorMessages: unionErrorMessages
+			} = this._getConditionsAndMessagesForUnion(
+				param,
 				index,
-				flags
+				flags,
+				type
 			);
-			const {
-				conditions: rightConditions,
-				errorMessages: rightErrorMessages
-			} = this._getConditionsAndMessagesByParam(
-				Object.assign({}, param, { type: type.right }),
-				index,
-				flags
-			);
-
-			if (
-				leftConditions &&
-				leftErrorMessages &&
-				rightConditions &&
-				rightErrorMessages
-			) {
-				const maxConditionsCount = Math.max(
-					leftConditions.length,
-					rightConditions.length
-				);
-
-				for (let i = 0; i < maxConditionsCount; i++) {
-					const leftCondition = leftConditions[i] || null;
-					const leftErrorMessage = leftErrorMessages[i] || null;
-					const rightCondition = rightConditions[i] || null;
-					const rightErrorMessage = rightErrorMessages[i] || null;
-
-					if (
-						leftCondition &&
-						leftErrorMessage &&
-						rightCondition &&
-						rightErrorMessage
-					) {
-						conditions.push(
-							`(${leftCondition}) && (${rightCondition})`
-						);
-						errorMessages.push(
-							`${leftErrorMessage} OR ${rightErrorMessage}`
-						);
-					} else if (leftCondition && leftErrorMessage) {
-						conditions.push(leftCondition);
-						errorMessages.push(rightCondition);
-					} else if (rightCondition && rightErrorMessage) {
-						conditions.push(rightCondition);
-						errorMessages.push(rightErrorMessage);
-					}
-				}
-			} else if (leftConditions && leftErrorMessages) {
-				conditions.push(...leftConditions);
-				errorMessages.push(...leftErrorMessages);
-			} else if (rightConditions && rightErrorMessages) {
-				conditions.push(...rightConditions);
-				errorMessages.push(...rightErrorMessages);
-			}
+			conditions.push(...unionConditions);
+			errorMessages.push(...unionErrorMessages);
 		} else if (type.type === 'RECORD' && type.entries) {
 			const {
-				conditions: objectConditions,
-				errorMessages: objectErrorMessages
-			} = this._getConditionsAndMessagesByParam(
-				Object.assign({}, param, {
-					type: { type: 'NAME', name: 'object' }
-				}),
+				conditions: recordConditions,
+				errorMessages: recordErrorMessages
+			} = this._getConditionsAndMessagesForRecord(
+				param,
 				index,
-				flags
+				flags,
+				type
 			);
+			conditions.push(...recordConditions);
+			errorMessages.push(...recordErrorMessages);
+		}
 
-			if (objectConditions && objectErrorMessages) {
-				conditions.push(...objectConditions);
-				errorMessages.push(...objectErrorMessages);
-			}
+		return { conditions, errorMessages };
+	}
 
-			type.entries.forEach(entry => {
-				if (
-					entry.type !== 'RECORD_ENTRY' ||
-					!entry.key ||
-					!entry.value
-				) {
-					return;
-				}
+	_getConditionsAndMessagesForArray(param, index, typeFlags, type) {
+		const { name } = param;
+		const conditions = [];
+		const errorMessages = [];
 
-				let {
-					conditions: entryConditions,
-					errorMessages: entryErrorMessages
-				} = this._getConditionsAndMessagesByParam({
-					type: entry.value,
-					optional: entry.optional || false,
-					name: `${name}['${entry.key}']`
-				});
+		const {
+			conditions: arrayConditions,
+			errorMessages: arrayErrorMessages
+		} = this._getConditionsAndMessagesByParam(
+			Object.assign({}, param, { type: type.subject }),
+			index,
+			typeFlags
+		);
 
-				if (!entryConditions || !entryErrorMessages) {
-					return;
-				}
+		if (arrayConditions && arrayErrorMessages) {
+			conditions.push(...arrayConditions);
+			errorMessages.push(...arrayErrorMessages);
+		}
 
-				entryConditions = entryConditions.map(
+		if (!type.objects || !type.objects.length) {
+			return { conditions, errorMessages };
+		}
+
+		let {
+			conditions: itemConditions,
+			errorMessages: itemErrorMessages
+		} = this._getConditionsAndMessagesByParam({
+			type: type.objects[0],
+			optional: false,
+			name: `${name}[0]`
+		});
+
+		if (itemConditions && itemErrorMessages) {
+			itemConditions = itemConditions.map(
+				condition =>
+					`Object.prototype.toString` +
+					`.call(${name}) === '[object Array]' &&` +
+					`${name}.length > 0 && (${condition})`
+			);
+			conditions.push(...itemConditions);
+			errorMessages.push(...itemErrorMessages);
+		}
+
+		return { conditions, errorMessages };
+	}
+
+	_getConditionsAndMessagesForObject(param, index, typeFlags, type) {
+		const { name } = param;
+		const conditions = [];
+		const errorMessages = [];
+
+		const {
+			conditions: objectConditions,
+			errorMessages: objectErrorMessages
+		} = this._getConditionsAndMessagesByParam(
+			Object.assign({}, param, { type: type.subject }),
+			index,
+			typeFlags
+		);
+
+		if (objectConditions && objectErrorMessages) {
+			conditions.push(...objectConditions);
+			errorMessages.push(...objectErrorMessages);
+		}
+
+		if (!type.objects || !type.objects.length) {
+			return { conditions, errorMessages };
+		}
+
+		const objectsCount = type.objects.length;
+		const keyName = `Object.keys(${name})[0]`;
+
+		if (objectsCount === 2) {
+			let {
+				conditions: keyConditions,
+				errorMessages: keyErrorMessages
+			} = this._getConditionsAndMessagesByParam({
+				type: type.objects[0],
+				optional: false,
+				name: keyName
+			});
+
+			if (keyConditions && keyErrorMessages) {
+				keyConditions = keyConditions.map(
 					condition =>
 						`Object.prototype.toString` +
 						`.call(${name}) === '[object Object]' && ` +
-						`('${entry.key}' in ${name}) && (${condition})`
+						`Object.keys && ${keyName} && ` +
+						`(${condition})`
 				);
-
-				conditions.push(...entryConditions);
-				errorMessages.push(...entryErrorMessages);
-			});
+				conditions.push(...keyConditions);
+				errorMessages.push(...keyErrorMessages);
+			}
 		}
+
+		if (objectsCount === 1 || objectsCount === 2) {
+			const valueName = `${name}[${keyName}]`;
+			let {
+				conditions: valueConditions,
+				errorMessages: valueErrorMessages
+			} = this._getConditionsAndMessagesByParam({
+				type: type.objects[objectsCount - 1],
+				optional: false,
+				name: valueName
+			});
+
+			if (valueConditions && valueErrorMessages) {
+				valueConditions = valueConditions.map(
+					condition =>
+						`Object.prototype.toString` +
+						`.call(${name}) === '[object Object]' && ` +
+						`Object.keys && ${keyName} && ` +
+						`${valueName} && (${condition})`
+				);
+				conditions.push(...valueConditions);
+				errorMessages.push(...valueErrorMessages);
+			}
+		}
+
+		return { conditions, errorMessages };
+	}
+
+	_getConditionsAndMessagesForUnion(param, index, typeFlags, type) {
+		const conditions = [];
+		const errorMessages = [];
+
+		const {
+			conditions: leftConditions,
+			errorMessages: leftErrorMessages
+		} = this._getConditionsAndMessagesByParam(
+			Object.assign({}, param, { type: type.left }),
+			index,
+			typeFlags
+		);
+		const {
+			conditions: rightConditions,
+			errorMessages: rightErrorMessages
+		} = this._getConditionsAndMessagesByParam(
+			Object.assign({}, param, { type: type.right }),
+			index,
+			typeFlags
+		);
+
+		if (
+			leftConditions &&
+			leftErrorMessages &&
+			rightConditions &&
+			rightErrorMessages
+		) {
+			const maxConditionsCount = Math.max(
+				leftConditions.length,
+				rightConditions.length
+			);
+
+			for (let i = 0; i < maxConditionsCount; i++) {
+				const leftCondition = leftConditions[i] || null;
+				const leftErrorMessage = leftErrorMessages[i] || null;
+				const rightCondition = rightConditions[i] || null;
+				const rightErrorMessage = rightErrorMessages[i] || null;
+
+				if (
+					leftCondition &&
+					leftErrorMessage &&
+					rightCondition &&
+					rightErrorMessage
+				) {
+					conditions.push(
+						`(${leftCondition}) && (${rightCondition})`
+					);
+					errorMessages.push(
+						`${leftErrorMessage} OR ${rightErrorMessage}`
+					);
+				} else if (leftCondition && leftErrorMessage) {
+					conditions.push(leftCondition);
+					errorMessages.push(rightCondition);
+				} else if (rightCondition && rightErrorMessage) {
+					conditions.push(rightCondition);
+					errorMessages.push(rightErrorMessage);
+				}
+			}
+		} else if (leftConditions && leftErrorMessages) {
+			conditions.push(...leftConditions);
+			errorMessages.push(...leftErrorMessages);
+		} else if (rightConditions && rightErrorMessages) {
+			conditions.push(...rightConditions);
+			errorMessages.push(...rightErrorMessages);
+		}
+
+		return { conditions, errorMessages };
+	}
+
+	_getConditionsAndMessagesForRecord(param, index, typeFlags, type) {
+		const { name } = param;
+		const conditions = [];
+		const errorMessages = [];
+
+		const {
+			conditions: objectConditions,
+			errorMessages: objectErrorMessages
+		} = this._getConditionsAndMessagesByParam(
+			Object.assign({}, param, {
+				type: { type: 'NAME', name: 'object' }
+			}),
+			index,
+			typeFlags
+		);
+
+		if (objectConditions && objectErrorMessages) {
+			conditions.push(...objectConditions);
+			errorMessages.push(...objectErrorMessages);
+		}
+
+		type.entries.forEach(entry => {
+			if (entry.type !== 'RECORD_ENTRY' || !entry.key || !entry.value) {
+				return;
+			}
+
+			let {
+				conditions: entryConditions,
+				errorMessages: entryErrorMessages
+			} = this._getConditionsAndMessagesByParam({
+				type: entry.value,
+				optional: entry.optional || false,
+				name: `${name}['${entry.key}']`
+			});
+
+			if (!entryConditions || !entryErrorMessages) {
+				return;
+			}
+
+			entryConditions = entryConditions.map(
+				condition =>
+					`Object.prototype.toString` +
+					`.call(${name}) === '[object Object]' && ` +
+					`('${entry.key}' in ${name}) && (${condition})`
+			);
+
+			conditions.push(...entryConditions);
+			errorMessages.push(...entryErrorMessages);
+		});
 
 		return { conditions, errorMessages };
 	}

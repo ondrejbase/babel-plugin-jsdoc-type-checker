@@ -1,4 +1,4 @@
-import { transform } from 'babel-core';
+import { transform } from '@babel/core';
 import plugin from '../main';
 
 describe('main', () => {
@@ -448,6 +448,137 @@ describe('main', () => {
 				}
 			}`,
 			TRANSFORM_OPTIONS
+		);
+		expect(code).toMatchSnapshot();
+	});
+
+	it('should not generate anything because the environment is production', () => {
+		setNodeEnv('prod');
+		const { code } = transform(
+			`
+			/**
+			 * Class Foo.
+			 */
+			class Foo {
+				/**
+				 * Returns the sum of x, y (optional).
+				 *
+				 * @type-checked
+				 * @param {number} x The first number.
+				 * @param {number} [y=0] The second number.
+				 * @return {number} The sum of x and y.
+				 */
+				sum(x, y = 0) {
+					return x + y;
+				}
+			}`,
+			TRANSFORM_OPTIONS
+		);
+		expect(code).toMatchSnapshot();
+	});
+
+	it('should not generate anything because the checker tag is not present', () => {
+		const { code } = transform(
+			`
+			/**
+			 * Class Foo.
+			 */
+			class Foo {
+				/**
+				 * Returns the sum of x, y (optional).
+				 *
+				 * @param {number} x The first number.
+				 * @param {number} [y=0] The second number.
+				 * @return {number} The sum of x and y.
+				 */
+				sum(x, y = 0) {
+					return x + y;
+				}
+			}`,
+			TRANSFORM_OPTIONS
+		);
+		expect(code).toMatchSnapshot();
+	});
+
+	it('should prepend a type checking to Foo#sum() because the checker tag is present on the class level', () => {
+		const { code } = transform(
+			`
+			/**
+			 * Class Foo.
+			 *
+			 * @type-checked
+			 */
+			class Foo {
+				/**
+				 * Returns the sum of x, y (optional).
+				 *
+				 * @param {number} x The first number.
+				 * @param {number} [y=0] The second number.
+				 * @return {number} The sum of x and y.
+				 */
+				sum(x, y = 0) {
+					return x + y;
+				}
+			}`,
+			TRANSFORM_OPTIONS
+		);
+		expect(code).toMatchSnapshot();
+	});
+
+	it(`should prepend a type checking to Foo#sum() because the checker tag is set to 'bar'`, () => {
+		const { code } = transform(
+			`
+			/**
+			 * Class Foo.
+			 */
+			class Foo {
+				/**
+				 * Returns the sum of x, y (optional).
+				 *
+				 * @bar
+				 * @param {number} x The first number.
+				 * @param {number} [y=0] The second number.
+				 * @return {number} The sum of x and y.
+				 */
+				sum(x, y = 0) {
+					return x + y;
+				}
+			}`,
+			{ plugins: [[plugin, { checkerTag: 'bar' }]] }
+		);
+		expect(code).toMatchSnapshot();
+	});
+
+	it(`should prepend a type checking to Foo#sum() using Facebook's invariant`, () => {
+		const { code } = transform(
+			`
+			/**
+			 * Class Foo.
+			 */
+			class Foo {
+				/**
+				 * Returns the sum of x, y (optional).
+				 *
+				 * @type-checked
+				 * @param {number} x The first number.
+				 * @param {number} [y=0] The second number.
+				 * @return {number} The sum of x and y.
+				 */
+				sum(x, y = 0) {
+					return x + y;
+				}
+			}`,
+			{
+				plugins: [
+					[
+						plugin,
+						{
+							checkingTemplate: `
+								invariant(!(\${condition}), \${errorMessage});`
+						}
+					]
+				]
+			}
 		);
 		expect(code).toMatchSnapshot();
 	});
