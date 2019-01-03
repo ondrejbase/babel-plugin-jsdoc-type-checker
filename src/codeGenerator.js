@@ -249,6 +249,23 @@ class CodeGenerator {
 			);
 			conditions.push(...recordConditions);
 			errorMessages.push(...recordErrorMessages);
+		} else if (
+			type.type === 'VARIADIC' &&
+			type.meta &&
+			type.meta.syntax === 'PREFIX_DOTS' &&
+			type.value
+		) {
+			const {
+				conditions: variadicConditions,
+				errorMessages: variadicErrorMessages
+			} = this._getConditionsAndMessagesForVariadic(
+				param,
+				index,
+				flags,
+				type
+			);
+			conditions.push(...variadicConditions);
+			errorMessages.push(...variadicErrorMessages);
 		}
 
 		return { conditions, errorMessages };
@@ -494,6 +511,30 @@ class CodeGenerator {
 			conditions.push(...entryConditions);
 			errorMessages.push(...entryErrorMessages);
 		});
+
+		return { conditions, errorMessages };
+	}
+
+	_getConditionsAndMessagesForVariadic(param, index, typeFlags, type) {
+		const conditions = [];
+		const errorMessages = [];
+
+		const {
+			conditions: restConditions,
+			errorMessages: restErrorMessages
+		} = this._getConditionsAndMessagesByParam(
+			Object.assign({}, param, {
+				type: type.value,
+				name: `Array.prototype.slice.call(arguments, ${index})[0]`
+			}),
+			index,
+			typeFlags
+		);
+
+		if (restConditions && restErrorMessages) {
+			conditions.push(...restConditions);
+			errorMessages.push(...restErrorMessages);
+		}
 
 		return { conditions, errorMessages };
 	}

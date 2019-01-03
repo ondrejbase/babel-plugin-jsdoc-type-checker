@@ -211,7 +211,7 @@ class Foo {
 }"
 `;
 
-exports[`main should prepend a type checking to Foo#push() 1`] = `
+exports[`main should prepend a type checking to Foo#push(), Foo#push2() and Foo#push3() 1`] = `
 "/**
  * Class Foo.
  */
@@ -222,8 +222,8 @@ class Foo {
    *
    * @type-checked
    * @param {Array} arr The array to be extended.
-   * @param {...*} [elements] The elements to add to the end of
-   *        the array.
+   * @param {...(number|string)} [elements] The elements to add to
+   *        the end of the array.
    * @return {number} The new length property of the array.
    */
   push(arr, ...elements) {
@@ -231,7 +231,53 @@ class Foo {
       throw new TypeError('Argument arr must be an array.');
     }
 
-    return arr.push(elements);
+    if (Array.prototype.slice.call(arguments, 1)[0] !== null && Array.prototype.slice.call(arguments, 1)[0] !== undefined && typeof Array.prototype.slice.call(arguments, 1)[0] !== 'number' && Array.prototype.slice.call(arguments, 1)[0] !== null && Array.prototype.slice.call(arguments, 1)[0] !== undefined && typeof Array.prototype.slice.call(arguments, 1)[0] !== 'string') {
+      throw new TypeError('Argument Array.prototype.slice.call(arguments, 1)[0] (optional) must be a number. OR Argument Array.prototype.slice.call(arguments, 1)[0] (optional) must be a string.');
+    }
+
+    return arr.push(...elements);
+  }
+  /**
+   * Adds one or more elements to the end of an array and returns
+   * the new length of the array.
+   *
+   * @type-checked
+   * @param {Array} arr The array to be extended.
+   * @param {...(number|string)=} elements The elements to add to
+   *        the end of the array.
+   * @return {number} The new length property of the array.
+   */
+
+
+  push2(arr, ...elements) {
+    if (Object.prototype.toString.call(arr) !== '[object Array]') {
+      throw new TypeError('Argument arr must be an array.');
+    }
+
+    if (Array.prototype.slice.call(arguments, 1)[0] !== null && Array.prototype.slice.call(arguments, 1)[0] !== undefined && typeof Array.prototype.slice.call(arguments, 1)[0] !== 'number' && Array.prototype.slice.call(arguments, 1)[0] !== null && Array.prototype.slice.call(arguments, 1)[0] !== undefined && typeof Array.prototype.slice.call(arguments, 1)[0] !== 'string') {
+      throw new TypeError('Argument Array.prototype.slice.call(arguments, 1)[0] (optional) must be a number. OR Argument Array.prototype.slice.call(arguments, 1)[0] (optional) must be a string.');
+    }
+
+    return arr.push(...elements);
+  }
+  /**
+   * Adds one or more elements to the end of an array and returns
+   * the new length of the array.
+   *
+   * @type-checked
+   * @param {Array} arr The array to be extended.
+   * @param {...*} [elements] The elements to add to
+   *        the end of the array.
+   * @return {number} The new length property of the array.
+   */
+
+
+  push3(arr, ...elements) {
+    if (Object.prototype.toString.call(arr) !== '[object Array]') {
+      throw new TypeError('Argument arr must be an array.');
+    }
+
+    return arr.push(...elements);
   }
 
 }"

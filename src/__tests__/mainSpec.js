@@ -90,7 +90,7 @@ describe('main', () => {
 		expect(code).toMatchSnapshot();
 	});
 
-	it('should prepend a type checking to Foo#push()', () => {
+	it('should prepend a type checking to Foo#push(), Foo#push2() and Foo#push3()', () => {
 		const { code } = transform(
 			`
 			/**
@@ -103,12 +103,40 @@ describe('main', () => {
 				 *
 				 * @type-checked
 				 * @param {Array} arr The array to be extended.
-				 * @param {...*} [elements] The elements to add to the end of
-				 *        the array.
+				 * @param {...(number|string)} [elements] The elements to add to
+				 *        the end of the array.
 				 * @return {number} The new length property of the array.
 				 */
 				push(arr, ...elements) {
-					return arr.push(elements);
+					return arr.push(...elements);
+				}
+
+				/**
+				 * Adds one or more elements to the end of an array and returns
+				 * the new length of the array.
+				 *
+				 * @type-checked
+				 * @param {Array} arr The array to be extended.
+				 * @param {...(number|string)=} elements The elements to add to
+				 *        the end of the array.
+				 * @return {number} The new length property of the array.
+				 */
+				push2(arr, ...elements) {
+					return arr.push(...elements);
+				}
+
+				/**
+				 * Adds one or more elements to the end of an array and returns
+				 * the new length of the array.
+				 *
+				 * @type-checked
+				 * @param {Array} arr The array to be extended.
+				 * @param {...*} [elements] The elements to add to
+				 *        the end of the array.
+				 * @return {number} The new length property of the array.
+				 */
+				push3(arr, ...elements) {
+					return arr.push(...elements);
 				}
 			}`,
 			TRANSFORM_OPTIONS
