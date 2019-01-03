@@ -1,6 +1,6 @@
 {
 	"name": "babel-plugin-jsdoc-type-checker",
-	"version": "1.0.4",
+	"version": "1.1.0",
 	"description": "Babel plugin for type checking based on JSDoc comments in selected environments.",
 	"main": "./dist/main.js",
 	"scripts": {
