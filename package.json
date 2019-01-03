@@ -40,7 +40,7 @@
 	"peerDependencies": {
 		"comment-parser": "0.x",
 		"es6-dynamic-template": "1.x",
-		"jsdoctypeparser": "2.x"
+		"jsdoctypeparser": "^2.0.0-alpha-8"
 	},
 	"jest": {
 		"transform": {
