@@ -30,13 +30,20 @@ class TypeChecker {
 						return;
 					}
 
-					const { node: classNode } = path.findParent(
-						({ node }) => node && node.type === 'ClassDeclaration'
-					);
-					const properClassComment = this._findProperComment(
-						classNode,
-						options
-					);
+					const { node: classNode } =
+						path.findParent(
+							({ node }) =>
+								node && node.type === 'ClassDeclaration'
+						) || {};
+					let properClassComment;
+
+					if (classNode) {
+						properClassComment = this._findProperComment(
+							classNode,
+							options
+						);
+					}
+
 					const { node } = path;
 					const properComment = this._findProperComment(
 						node,
