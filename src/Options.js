@@ -3,7 +3,7 @@ const CHECKING_TEMPLATE = `
 	if (\${condition}) {
 		throw new TypeError(\${errorMessage});
 	}`;
-const SUPPORTED_ENVIRONMENTS = ['dev', 'test'];
+const SUPPORTED_ENVIRONMENTS = ['dev', 'development', 'test'];
 
 export default class Options {
 	constructor(pluginOptions) {
@@ -35,11 +35,14 @@ export default class Options {
 	/**
 	 * Checks if this plugin should generate a type checking code.
 	 *
-	 * @param {string} [environment=process.env.NODE_ENV] The environment.
+	 * @param {string} [environment=process.env.NODE_ENV || 'dev']
+	 *        An environment.
 	 * @return {boolean} `true` when it should generate a type checking code,
 	 *         otherwise `false`.
 	 */
-	shouldGenerateTypeCheckingCode(environment = process.env.NODE_ENV) {
+	shouldGenerateTypeCheckingCode(
+		environment = process.env.NODE_ENV || 'dev'
+	) {
 		if (!environment || typeof environment !== 'string') {
 			throw new TypeError('Argument environment must be a string.');
 		}
