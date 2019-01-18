@@ -25,4 +25,29 @@ browserify('./script.js')
   .pipe(fs.createWriteStream('bundle.js'));
 ```
 
-## Example
+## Options
+
+### `checkerTag`
+
+`string`, defaults to `'type-checked'`
+
+The plugin generates a type checking code only in class methods with a JSDoc
+comment block that contain a tag that equals to this option's value. 
+
+### `checkingTemplate`
+
+`string`, defaults to
+``
+if (\${condition}) {
+	throw new TypeError(\${errorMessage});
+}``
+
+This option determinates how the generated code looks like. Its value is an ES6 template string with some escaped placeholders:
+- `\${condition}` is a placeholder for a generated condition,
+- `\${errorMessage}` is a placeholder for a generated error message.
+
+### `supportEnvironments`
+
+`string[]`, defaults to `['dev', 'development', 'test']`
+
+An array of environments in which the plugin generates a type checking code. If `process.env.NODE_ENV` equals to some of these items, the plugin will generate the code.
