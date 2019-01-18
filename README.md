@@ -10,17 +10,17 @@ This ES6 code:
  * Class Foo.
  */
 class Foo {
-	/**
-	 * Returns the sum of x, y (optional).
-	 *
-	 * @type-checked
-	 * @param {number} x The first number.
-	 * @param {number} [y=0] The second number.
-	 * @return {number} The sum of x and y.
-	 */
-	sum(x, y = 0) {
-		return x + y;
-	}
+  /**
+   * Returns the sum of x, y (optional).
+   *
+   * @type-checked
+   * @param {number} x The first number.
+   * @param {number} [y=0] The second number.
+   * @return {number} The sum of x and y.
+   */
+  sum(x, y = 0) {
+    return x + y;
+  }
 }
 ```
 
@@ -31,32 +31,54 @@ Will be transformed to:
  * Class Foo.
  */
 class Foo {
-	/**
-	 * Returns the sum of x, y (optional).
-	 *
-	 * @type-checked
-	 * @param {number} x The first number.
-	 * @param {number} [y=0] The second number.
-	 * @return {number} The sum of x and y.
-	 */
-	 sum(x, y = 0) {
-	 	if (typeof x !== 'number') {
-			throw new TypeError('Argument x must be a number.');
-		}
+  /**
+   * Returns the sum of x, y (optional).
+   *
+   * @type-checked
+   * @param {number} x The first number.
+   * @param {number} [y=0] The second number.
+   * @return {number} The sum of x and y.
+   */
+  sum(x, y = 0) {
+    if (typeof x !== 'number') {
+      throw new TypeError('Argument x must be a number.');
+    }
 		
-		if (y !== null && y !== undefined && typeof y !== 'number') {
-			throw new TypeError('Argument y (optional) must be a number.');
-		}
+    if (y !== null && y !== undefined && typeof y !== 'number') {
+      throw new TypeError('Argument y (optional) must be a number.');
+    }
 
-		return x + y;
-	}
-
+    return x + y;
+  }
 }
 ```
 
 It transforms only ES6 class methods that have JSDoc comment blocks with `@type-checked` tag (configurable by [`checkerTag` option](#checkertag)) or are members of a class with a JSDoc comment block containing `@type-checked` tag.
 
-The generated code is configurable by [`checkingTemplate` option](#checkingtemplate).
+The generated code is configurable by [`checkingTemplate` option](#checkingtemplate). A custom generated code can look like this:
+
+```javascript
+/**
+ * Class Foo.
+ */
+class Foo {
+  /**
+   * Returns the sum of x, y (optional).
+   *
+   * @type-checked
+   * @param {number} x The first number.
+   * @param {number} [y=0] The second number.
+   * @return {number} The sum of x and y.
+   */
+  sum(x, y = 0) {
+    invariant(!(typeof x !== 'number'), 'Argument x must be a number.');
+    invariant(!(y !== null && y !== undefined && typeof y !== 'number'), 'Argument y (optional) must be a number.');
+    return x + y;
+  }
+}
+```
+
+This generated code uses Facebook invariant()
 
 ## Installation
 ```sh
