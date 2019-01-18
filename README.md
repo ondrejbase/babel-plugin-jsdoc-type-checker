@@ -56,6 +56,8 @@ class Foo {
 
 It transforms only ES6 class methods that have JSDoc comment blocks with `@type-checked` tag (configurable) or are members of a class with a JSDoc comment block containing `@type-checked` tag.
 
+The generated code is configurable by [`checkingTemplate` option](###checkingtemplate).
+
 ## Installation
 ```sh
 npm install babel-plugin-jsdoc-type-checker --save-dev
