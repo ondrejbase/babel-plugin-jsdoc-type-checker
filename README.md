@@ -38,9 +38,9 @@ comment block that contain a tag that equals to this option's value.
 
 `string`, defaults to
 `
-\`if (\${condition}) {
+`if (\${condition}) {
 	throw new TypeError(\${errorMessage});
-}\` `
+}` `
 
 This option determinates how the generated code looks like. Its value is an ES6 template string with some escaped placeholders:
 - `\${condition}` is a placeholder for a generated condition,
