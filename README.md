@@ -1,5 +1,5 @@
 # babel-plugin-jsdoc-type-checker
-Babel plugin that generates a type checking code based on JSDoc comments in supported environments (configurable).
+Babel plugin that generates a type checking code based on JSDoc comments in supported environments (configurable by [`supportedEnvironments` option](#supportedenvironments)).
 
 ## Example
 
