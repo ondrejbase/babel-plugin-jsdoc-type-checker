@@ -78,7 +78,7 @@ class Foo {
 }
 ```
 
-This generated code uses Facebook invariant()
+This generated code contains [Facebook's `invariant`](https://www.npmjs.com/package/invariant). You could generate a code that like this, if you set `checkingTemplate` option to `` `invariant(!(\${condition}), \${errorMessage});` ``.
 
 ## Installation
 ```sh
