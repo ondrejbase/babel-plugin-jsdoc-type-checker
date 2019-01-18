@@ -1,5 +1,58 @@
 # babel-plugin-jsdoc-type-checker
-Babel plugin for type checking based on JSDoc comments in selected environments.
+Babel plugin that generates a type checking code based on JSDoc comments in supported environments.
+
+## Example
+
+This ES6 code:
+
+```javascript
+/**
+ * Class Foo.
+ */
+class Foo {
+	/**
+	 * Returns the sum of x, y (optional).
+	 *
+	 * @type-checked
+	 * @param {number} x The first number.
+	 * @param {number} [y=0] The second number.
+	 * @return {number} The sum of x and y.
+	 */
+	sum(x, y = 0) {
+		return x + y;
+	}
+}
+```
+
+Will be transformed to:
+
+```javascript
+/**
+ * Class Foo.
+ */
+class Foo {
+	/**
+	 * Returns the sum of x, y (optional).
+	 *
+	 * @type-checked
+	 * @param {number} x The first number.
+	 * @param {number} [y=0] The second number.
+	 * @return {number} The sum of x and y.
+	 */
+	 sum(x, y = 0) {
+	 	if (typeof x !== 'number') {
+			throw new TypeError('Argument x must be a number.');
+		}
+		
+		if (y !== null && y !== undefined && typeof y !== 'number') {
+			throw new TypeError('Argument y (optional) must be a number.');
+		}
+
+		return x + y;
+	}
+
+}
+```
 
 ## Installation
 ```sh
