@@ -46,7 +46,7 @@ This option determinates how the generated code looks like. Its value is an ES6 
 - `\${condition}` is a placeholder for a generated condition,
 - `\${errorMessage}` is a placeholder for a generated error message.
 
-### `supportEnvironments`
+### `supportedEnvironments`
 
 `string[]`, defaults to `['dev', 'development', 'test']`
 
