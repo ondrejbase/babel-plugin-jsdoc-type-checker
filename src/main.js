@@ -69,7 +69,7 @@ class TypeChecker {
 	}
 
 	_findProperComment(node, options, mustHaveCheckerTag = true) {
-		const { leadingComments } = node;
+		const { leadingComments } = node || {};
 
 		if (!leadingComments) {
 			return null;
