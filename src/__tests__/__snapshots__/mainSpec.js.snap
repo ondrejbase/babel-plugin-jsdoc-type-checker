@@ -27,7 +27,7 @@ class Foo {
   /**
    * Returns the sum of x, y (optional).
    *
-   * @type-checked
+   * @typechecked
    * @param {number} x The first number.
    * @param {number} [y=0] The second number.
    * @return {number} The sum of x and y.
@@ -47,7 +47,7 @@ class Foo {
   /**
    * Computes a logical AND of x and y (optional).
    *
-   * @type-checked
+   * @typechecked
    * @param {boolean} x The first boolean value.
    * @param {boolean=} y The second boolean value.
    * @return {boolean} The logical and of x and y.
@@ -75,7 +75,7 @@ class Foo {
   /**
    * Concats strings x and y (optional).
    *
-   * @type-checked
+   * @typechecked
    * @param {string} x The first string.
    * @param {string} [y=''] The second string.
    * @return {string} The concatenation of x and y.
@@ -104,7 +104,7 @@ class Foo {
    * Joins the elements of an array into a string, and returns the
    * string.
    *
-   * @type-checked
+   * @typechecked
    * @param {string[]} arr An array of strings.
    * @return {string} [separator=','] The separator to be used.
    * @return {string} A String, representing the array values,
@@ -125,7 +125,7 @@ class Foo {
    * Joins the elements of an array into a string, and returns the
    * string.
    *
-   * @type-checked
+   * @typechecked
    * @param {Array<string>=} arr An array of strings.
    * @return {string} [separator=','] The separator to be used.
    * @return {string} A String, representing the array values,
@@ -156,7 +156,7 @@ class Foo {
   /**
    * Negates the given value.
    *
-   * @type-checked
+   * @typechecked
    * @param {(boolean|number|string)} value A value.
    * @return {boolean} The logically negated value.
    */
@@ -170,7 +170,7 @@ class Foo {
   /**
    * Negates the given value.
    *
-   * @type-checked
+   * @typechecked
    * @param {!(boolean|number|string)=} value A value.
    * @return {boolean} The logically negated value.
    */
@@ -195,7 +195,7 @@ class Foo {
   /**
    * Waits for a user input and then calls a callback.
    *
-   * @type-checked
+   * @typechecked
    * @param {function} callback A callback which is called with
    *        a user input as an argument.
    */
@@ -220,7 +220,7 @@ class Foo {
    * Adds one or more elements to the end of an array and returns
    * the new length of the array.
    *
-   * @type-checked
+   * @typechecked
    * @param {Array} arr The array to be extended.
    * @param {...(number|string)} [elements] The elements to add to
    *        the end of the array.
@@ -241,7 +241,7 @@ class Foo {
    * Adds one or more elements to the end of an array and returns
    * the new length of the array.
    *
-   * @type-checked
+   * @typechecked
    * @param {Array} arr The array to be extended.
    * @param {...(number|string)=} elements The elements to add to
    *        the end of the array.
@@ -264,7 +264,7 @@ class Foo {
    * Adds one or more elements to the end of an array and returns
    * the new length of the array.
    *
-   * @type-checked
+   * @typechecked
    * @param {Array} arr The array to be extended.
    * @param {...*} [elements] The elements to add to
    *        the end of the array.
@@ -291,7 +291,7 @@ class Foo {
   /**
    * Counts properties of the object.
    *
-   * @type-checked
+   * @typechecked
    * @param {!object=} obj The object.
    * @return {number} A count of the object's properties.
    */
@@ -305,7 +305,7 @@ class Foo {
   /**
    * Counts properties of the object.
    *
-   * @type-checked
+   * @typechecked
    * @param {?object=} obj The object or null.
    * @return {number} A count of the object's properties.
    */
@@ -330,7 +330,7 @@ class Foo {
   /**
    * Returns the sum of x, y (optional).
    *
-   * @type-checked
+   * @typechecked
    * @param {number} x The first number.
    * @param {number} [y=0] The second number.
    * @return {number} The sum of x and y.
@@ -354,7 +354,7 @@ exports[`main should prepend a type checking to Foo#sum() because the checker ta
 "/**
  * Class Foo.
  *
- * @type-checked
+ * @typechecked
  */
 class Foo {
   /**
@@ -415,7 +415,7 @@ class Foo {
   /**
    * Returns the sum of x, y (optional).
    *
-   * @type-checked
+   * @typechecked
    * @param {number} x The first number.
    * @param {number} [y=0] The second number.
    * @return {number} The sum of x and y.
@@ -437,7 +437,7 @@ class Foo {
   /**
    * Returns a sum of all numbers stored in the array.
    *
-   * @type-checked
+   * @typechecked
    * @param {Array.<number>} arr An array of numbers.
    * @return {number} The sum of all numbers.
    */
@@ -455,7 +455,7 @@ class Foo {
   /**
    * Returns a sum of all numbers stored in inner arrays.
    *
-   * @type-checked
+   * @typechecked
    * @param {Array.<Array.<number>>} [arr] An array of arrays of
    *        numbers.
    * @return {number} The sum of all numbers.
@@ -489,7 +489,7 @@ class Foo {
   /**
    * Returns a sum of all numbers stored in the object.
    *
-   * @type-checked
+   * @typechecked
    * @param {Object.<string, number>} obj An object with numbers
    *        as property values.
    * @return {number} The sum of all numbers.
@@ -512,7 +512,7 @@ class Foo {
   /**
    * Returns a sum of all numbers stored in the object.
    *
-   * @type-checked
+   * @typechecked
    * @param {Object<string, number>=} obj An object with numbers
    *        as property values.
    * @return {number} The sum of all numbers.
@@ -547,7 +547,7 @@ class Foo {
    * Returns a string representation of the object with c value
    * first, a value second and b value third.
    *
-   * @type-checked
+   * @typechecked
    * @param {{a: number, b: string, c}} obj An object with a, b
    *        and c properties.
    * @return {string} A string representation of the object in
@@ -577,7 +577,7 @@ class Foo {
    * Returns a string representation of the object with c value
    * first, a value second and b value third.
    *
-   * @type-checked
+   * @typechecked
    * @param {{a: !number, b: ?string, c}=} obj An object with a, b
    *        and c properties.
    * @return {string} A string representation of the object in
@@ -618,7 +618,7 @@ class Foo {
    * Returns a string representation of the object with c value
    * first, b value second, a value third and d value fourth.
    *
-   * @type-checked
+   * @typechecked
    * @param {Object} obj An object with a, b and c properties.
    * @param {number} obj.a Property a.
    * @param {string} [obj.b] Property b.
@@ -655,7 +655,7 @@ class Foo {
    * Returns a string representation of the object with c value
    * first, b value second, a value third and d value fourth.
    *
-   * @type-checked
+   * @typechecked
    * @param {Object=} obj An object with a and inner properties.
    * @param {number=} obj.a Property a.
    * @param {Object=} obj.inner An inner object with b and c
@@ -711,7 +711,7 @@ class Foo {
   /**
    * Returns a string representing the object.
    *
-   * @type-checked
+   * @typechecked
    * @param {object} obj The object to be represented as
    *        a string.
    * @return {string} A string representing the object.

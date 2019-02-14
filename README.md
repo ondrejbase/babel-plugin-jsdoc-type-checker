@@ -13,7 +13,7 @@ class Foo {
   /**
    * Returns the sum of x, y (optional).
    *
-   * @type-checked
+   * @typechecked
    * @param {number} x The first number.
    * @param {number} [y=0] The second number.
    * @return {number} The sum of x and y.
@@ -34,7 +34,7 @@ class Foo {
   /**
    * Returns the sum of x, y (optional).
    *
-   * @type-checked
+   * @typechecked
    * @param {number} x The first number.
    * @param {number} [y=0] The second number.
    * @return {number} The sum of x and y.
@@ -53,7 +53,7 @@ class Foo {
 }
 ```
 
-It transforms only ES6 class methods that have JSDoc comment blocks with `@type-checked` tag (configurable by [`checkerTag` option](#checkertag)) or are members of a class with a JSDoc comment block containing `@type-checked` tag.
+It transforms only ES6 class methods that have JSDoc comment blocks with `@typechecked` tag (configurable by [`checkerTag` option](#checkertag)) or are members of a class with a JSDoc comment block containing `@typechecked` tag.
 
 The generated code is configurable by [`checkingTemplate` option](#checkingtemplate). A custom generated code can look like this:
 
@@ -65,7 +65,7 @@ class Foo {
   /**
    * Returns the sum of x, y (optional).
    *
-   * @type-checked
+   * @typechecked
    * @param {number} x The first number.
    * @param {number} [y=0] The second number.
    * @return {number} The sum of x and y.
@@ -108,7 +108,7 @@ browserify('./script.js')
 
 ### `checkerTag`
 
-`string`, defaults to `'type-checked'`
+`string`, defaults to `'typechecked'`
 
 The plugin generates a type checking code only in class methods with a JSDoc
 comment block that contain a tag that equals to this option's value. 

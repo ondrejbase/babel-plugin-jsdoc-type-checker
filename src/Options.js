@@ -1,4 +1,4 @@
-const CHECKER_TAG = 'type-checked';
+const CHECKER_TAG = 'typechecked';
 const CHECKING_TEMPLATE = `
 	if (\${condition}) {
 		throw new TypeError(\${errorMessage});

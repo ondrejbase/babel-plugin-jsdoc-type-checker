@@ -27,7 +27,7 @@ describe('main', () => {
 				/**
 				 * Returns the sum of x, y (optional).
 				 *
-				 * @type-checked
+				 * @typechecked
 				 * @param {number} x The first number.
 				 * @param {number} [y=0] The second number.
 				 * @return {number} The sum of x and y.
@@ -51,7 +51,7 @@ describe('main', () => {
 				/**
 				 * Concats strings x and y (optional).
 				 *
-				 * @type-checked
+				 * @typechecked
 				 * @param {string} x The first string.
 				 * @param {string} [y=''] The second string.
 				 * @return {string} The concatenation of x and y.
@@ -75,7 +75,7 @@ describe('main', () => {
 				/**
 				 * Computes a logical AND of x and y (optional).
 				 *
-				 * @type-checked
+				 * @typechecked
 				 * @param {boolean} x The first boolean value.
 				 * @param {boolean=} y The second boolean value.
 				 * @return {boolean} The logical and of x and y.
@@ -101,7 +101,7 @@ describe('main', () => {
 				 * Adds one or more elements to the end of an array and returns
 				 * the new length of the array.
 				 *
-				 * @type-checked
+				 * @typechecked
 				 * @param {Array} arr The array to be extended.
 				 * @param {...(number|string)} [elements] The elements to add to
 				 *        the end of the array.
@@ -115,7 +115,7 @@ describe('main', () => {
 				 * Adds one or more elements to the end of an array and returns
 				 * the new length of the array.
 				 *
-				 * @type-checked
+				 * @typechecked
 				 * @param {Array} arr The array to be extended.
 				 * @param {...(number|string)=} elements The elements to add to
 				 *        the end of the array.
@@ -129,7 +129,7 @@ describe('main', () => {
 				 * Adds one or more elements to the end of an array and returns
 				 * the new length of the array.
 				 *
-				 * @type-checked
+				 * @typechecked
 				 * @param {Array} arr The array to be extended.
 				 * @param {...*} [elements] The elements to add to
 				 *        the end of the array.
@@ -154,7 +154,7 @@ describe('main', () => {
 				/**
 				 * Returns a string representing the object.
 				 *
-				 * @type-checked
+				 * @typechecked
 				 * @param {object} obj The object to be represented as
 				 *        a string.
 				 * @return {string} A string representing the object.
@@ -178,7 +178,7 @@ describe('main', () => {
 				/**
 				 * Waits for a user input and then calls a callback.
 				 *
-				 * @type-checked
+				 * @typechecked
 				 * @param {function} callback A callback which is called with
 				 *        a user input as an argument.
 				 */
@@ -202,7 +202,7 @@ describe('main', () => {
 				/**
 				 * Counts properties of the object.
 				 *
-				 * @type-checked
+				 * @typechecked
 				 * @param {!object=} obj The object.
 				 * @return {number} A count of the object's properties.
 				 */
@@ -213,7 +213,7 @@ describe('main', () => {
 				/**
 				 * Counts properties of the object.
 				 *
-				 * @type-checked
+				 * @typechecked
 				 * @param {?object=} obj The object or null.
 				 * @return {number} A count of the object's properties.
 				 */
@@ -236,7 +236,7 @@ describe('main', () => {
 				/**
 				 * Returns a sum of all numbers stored in the array.
 				 *
-				 * @type-checked
+				 * @typechecked
 				 * @param {Array.<number>} arr An array of numbers.
 				 * @return {number} The sum of all numbers.
 				 */
@@ -247,7 +247,7 @@ describe('main', () => {
 				/**
 				 * Returns a sum of all numbers stored in inner arrays.
 				 *
-				 * @type-checked
+				 * @typechecked
 				 * @param {Array.<Array.<number>>} [arr] An array of arrays of
 				 *        numbers.
 				 * @return {number} The sum of all numbers.
@@ -278,7 +278,7 @@ describe('main', () => {
 				 * Joins the elements of an array into a string, and returns the
 				 * string.
 				 *
-				 * @type-checked
+				 * @typechecked
 				 * @param {string[]} arr An array of strings.
 				 * @return {string} [separator=','] The separator to be used.
 				 * @return {string} A String, representing the array values,
@@ -292,7 +292,7 @@ describe('main', () => {
 				 * Joins the elements of an array into a string, and returns the
 				 * string.
 				 *
-				 * @type-checked
+				 * @typechecked
 				 * @param {Array<string>=} arr An array of strings.
 				 * @return {string} [separator=','] The separator to be used.
 				 * @return {string} A String, representing the array values,
@@ -317,7 +317,7 @@ describe('main', () => {
 				/**
 				 * Negates the given value.
 				 *
-				 * @type-checked
+				 * @typechecked
 				 * @param {(boolean|number|string)} value A value.
 				 * @return {boolean} The logically negated value.
 				 */
@@ -328,7 +328,7 @@ describe('main', () => {
 				/**
 				 * Negates the given value.
 				 *
-				 * @type-checked
+				 * @typechecked
 				 * @param {!(boolean|number|string)=} value A value.
 				 * @return {boolean} The logically negated value.
 				 */
@@ -351,7 +351,7 @@ describe('main', () => {
 				/**
 				 * Returns a sum of all numbers stored in the object.
 				 *
-				 * @type-checked
+				 * @typechecked
 				 * @param {Object.<string, number>} obj An object with numbers
 				 *        as property values.
 				 * @return {number} The sum of all numbers.
@@ -366,7 +366,7 @@ describe('main', () => {
 				/**
 				 * Returns a sum of all numbers stored in the object.
 				 *
-				 * @type-checked
+				 * @typechecked
 				 * @param {Object<string, number>=} obj An object with numbers
 				 *        as property values.
 				 * @return {number} The sum of all numbers.
@@ -394,7 +394,7 @@ describe('main', () => {
 				 * Returns a string representation of the object with c value
 				 * first, a value second and b value third.
 				 *
-				 * @type-checked
+				 * @typechecked
 				 * @param {{a: number, b: string, c}} obj An object with a, b
 				 *        and c properties.
 				 * @return {string} A string representation of the object in
@@ -410,7 +410,7 @@ describe('main', () => {
 				 * Returns a string representation of the object with c value
 				 * first, a value second and b value third.
 				 *
-				 * @type-checked
+				 * @typechecked
 				 * @param {{a: !number, b: ?string, c}=} obj An object with a, b
 				 *        and c properties.
 				 * @return {string} A string representation of the object in
@@ -438,7 +438,7 @@ describe('main', () => {
 				 * Returns a string representation of the object with c value
 				 * first, b value second, a value third and d value fourth.
 				 *
-				 * @type-checked
+				 * @typechecked
 				 * @param {Object} obj An object with a, b and c properties.
 				 * @param {number} obj.a Property a.
 				 * @param {string} [obj.b] Property b.
@@ -457,7 +457,7 @@ describe('main', () => {
 				 * Returns a string representation of the object with c value
 				 * first, b value second, a value third and d value fourth.
 				 *
-				 * @type-checked
+				 * @typechecked
 				 * @param {Object=} obj An object with a and inner properties.
 				 * @param {number=} obj.a Property a.
 				 * @param {Object=} obj.inner An inner object with b and c
@@ -491,7 +491,7 @@ describe('main', () => {
 				/**
 				 * Returns the sum of x, y (optional).
 				 *
-				 * @type-checked
+				 * @typechecked
 				 * @param {number} x The first number.
 				 * @param {number} [y=0] The second number.
 				 * @return {number} The sum of x and y.
@@ -534,7 +534,7 @@ describe('main', () => {
 			/**
 			 * Class Foo.
 			 *
-			 * @type-checked
+			 * @typechecked
 			 */
 			class Foo {
 				/**
@@ -587,7 +587,7 @@ describe('main', () => {
 				/**
 				 * Returns the sum of x, y (optional).
 				 *
-				 * @type-checked
+				 * @typechecked
 				 * @param {number} x The first number.
 				 * @param {number} [y=0] The second number.
 				 * @return {number} The sum of x and y.
