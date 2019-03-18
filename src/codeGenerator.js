@@ -176,52 +176,16 @@ class CodeGenerator {
 					);
 					break;
 				default: {
-					const typedef = this._findTypedef(typeName, path);
+					const typedefResult = this._getConditionsAndMessagesFromTypedef(
+						param,
+						index,
+						path,
+						flags,
+						type
+					);
 
-					if (typedef) {
-						const typedefType = this._getTypedefType(typedef);
-
-						if (typedefType) {
-							let entries;
-
-							if (this._isObjectType(typedefType)) {
-								const props = typedef
-									.findTags(['property', 'prop'])
-									.map(Comment.parseTagType);
-								entries = this._getObjectProperties(
-									props,
-									name,
-									false
-								).entries;
-							}
-
-							if (entries && entries.length > 0) {
-								const {
-									flags: typedefFlags
-								} = this._separateTypeAndFlags(typedefType);
-
-								return this._getConditionsAndMessagesByParam(
-									Object.assign({}, param, {
-										type: {
-											type: 'RECORD',
-											entries
-										}
-									}),
-									index,
-									path,
-									Object.assign({}, flags, typedefFlags)
-								);
-							} else {
-								return this._getConditionsAndMessagesByParam(
-									Object.assign({}, param, {
-										type: typedefType
-									}),
-									index,
-									path,
-									flags
-								);
-							}
-						}
+					if (typedefResult) {
+						return typedefResult;
 					}
 
 					return null;
@@ -613,6 +577,57 @@ class CodeGenerator {
 		}
 
 		return { conditions, errorMessages };
+	}
+
+	_getConditionsAndMessagesFromTypedef(param, index, path, typeFlags, type) {
+		const typeName = type.name.toLowerCase();
+		const typedef = this._findTypedef(typeName, path);
+
+		if (!typedef) {
+			return null;
+		}
+
+		const typedefType = this._getTypedefType(typedef);
+
+		if (!typedefType) {
+			return null;
+		}
+
+		let entries;
+
+		if (this._isObjectType(typedefType)) {
+			const props = typedef
+				.findTags(['property', 'prop'])
+				.map(Comment.parseTagType);
+			entries = this._getObjectProperties(props, name, false).entries;
+		}
+
+		if (entries && entries.length > 0) {
+			const { flags: typedefFlags } = this._separateTypeAndFlags(
+				typedefType
+			);
+
+			return this._getConditionsAndMessagesByParam(
+				Object.assign({}, param, {
+					type: {
+						type: 'RECORD',
+						entries
+					}
+				}),
+				index,
+				path,
+				Object.assign({}, typeFlags, typedefFlags)
+			);
+		} else {
+			return this._getConditionsAndMessagesByParam(
+				Object.assign({}, param, {
+					type: typedefType
+				}),
+				index,
+				path,
+				typeFlags
+			);
+		}
 	}
 
 	_separateTypeAndFlags(type) {
