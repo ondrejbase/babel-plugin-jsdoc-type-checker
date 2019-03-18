@@ -57,7 +57,8 @@ class TypeChecker {
 
 					const generatedNodes = codeGenerator.generateNodes(
 						options.checkingTemplate,
-						properComment
+						properComment,
+						path
 					);
 
 					if (generatedNodes) {

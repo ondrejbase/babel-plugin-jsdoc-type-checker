@@ -3,8 +3,8 @@ import fillTemplate from 'es6-dynamic-template';
 import Comment from './Comment';
 
 class CodeGenerator {
-	generateNodes(template, comment) {
-		const code = this.generateCode(template, comment);
+	generateNodes(template, comment, path) {
+		const code = this.generateCode(template, comment, path);
 
 		if (!code) {
 			return null;
@@ -27,7 +27,7 @@ class CodeGenerator {
 		}
 	}
 
-	generateCode(template, comment) {
+	generateCode(template, comment, path) {
 		if (!template || typeof template !== 'string') {
 			throw new TypeError('Argument template must be a string.');
 		}
@@ -47,7 +47,7 @@ class CodeGenerator {
 		const codeFragments = [];
 		this._joinObjectsWithProperties(params).forEach((param, index) => {
 			const { conditions, errorMessages } =
-				this._getConditionsAndMessagesByParam(param, index) || {};
+				this._getConditionsAndMessagesByParam(param, index, path) || {};
 
 			if (
 				!conditions ||
@@ -73,7 +73,7 @@ class CodeGenerator {
 		return codeFragments.join('\n');
 	}
 
-	_getConditionsAndMessagesByParam(param, index, typeFlags = {}) {
+	_getConditionsAndMessagesByParam(param, index, path, typeFlags = {}) {
 		let { name, optional } = param;
 		let flags = Object.assign(
 			{ nullable: false, notNullable: false, optional: false },
@@ -175,8 +175,57 @@ class CodeGenerator {
 						} must be an object.`
 					);
 					break;
-				default:
+				default: {
+					const typedef = this._findTypedef(typeName, path);
+
+					if (typedef) {
+						const typedefType = this._getTypedefType(typedef);
+
+						if (typedefType) {
+							let entries;
+
+							if (this._isObjectType(typedefType)) {
+								const props = typedef
+									.findTags(['property', 'prop'])
+									.map(Comment.parseTagType);
+								entries = this._getObjectProperties(
+									props,
+									name,
+									false
+								).entries;
+							}
+
+							if (entries && entries.length > 0) {
+								const {
+									flags: typedefFlags
+								} = this._separateTypeAndFlags(typedefType);
+
+								return this._getConditionsAndMessagesByParam(
+									Object.assign({}, param, {
+										type: {
+											type: 'RECORD',
+											entries
+										}
+									}),
+									index,
+									path,
+									Object.assign({}, flags, typedefFlags)
+								);
+							} else {
+								return this._getConditionsAndMessagesByParam(
+									Object.assign({}, param, {
+										type: typedefType
+									}),
+									index,
+									path,
+									flags
+								);
+							}
+						}
+					}
+
 					return null;
+				}
 			}
 		} else if (
 			type.type === 'GENERIC' &&
@@ -193,6 +242,7 @@ class CodeGenerator {
 					} = this._getConditionsAndMessagesForArray(
 						param,
 						index,
+						path,
 						flags,
 						type
 					);
@@ -208,6 +258,7 @@ class CodeGenerator {
 					} = this._getConditionsAndMessagesForObject(
 						param,
 						index,
+						path,
 						flags,
 						type
 					);
@@ -232,6 +283,7 @@ class CodeGenerator {
 			} = this._getConditionsAndMessagesForUnion(
 				param,
 				index,
+				path,
 				flags,
 				type
 			);
@@ -244,6 +296,7 @@ class CodeGenerator {
 			} = this._getConditionsAndMessagesForRecord(
 				param,
 				index,
+				path,
 				flags,
 				type
 			);
@@ -261,6 +314,7 @@ class CodeGenerator {
 			} = this._getConditionsAndMessagesForVariadic(
 				param,
 				index,
+				path,
 				flags,
 				type
 			);
@@ -271,7 +325,7 @@ class CodeGenerator {
 		return { conditions, errorMessages };
 	}
 
-	_getConditionsAndMessagesForArray(param, index, typeFlags, type) {
+	_getConditionsAndMessagesForArray(param, index, path, typeFlags, type) {
 		const { name } = param;
 		const conditions = [];
 		const errorMessages = [];
@@ -282,6 +336,7 @@ class CodeGenerator {
 		} = this._getConditionsAndMessagesByParam(
 			Object.assign({}, param, { type: type.subject }),
 			index,
+			path,
 			typeFlags
 		);
 
@@ -297,11 +352,15 @@ class CodeGenerator {
 		let {
 			conditions: itemConditions,
 			errorMessages: itemErrorMessages
-		} = this._getConditionsAndMessagesByParam({
-			type: type.objects[0],
-			optional: false,
-			name: `${name}[0]`
-		});
+		} = this._getConditionsAndMessagesByParam(
+			{
+				type: type.objects[0],
+				optional: false,
+				name: `${name}[0]`
+			},
+			0,
+			path
+		);
 
 		if (itemConditions && itemErrorMessages) {
 			itemConditions = itemConditions.map(
@@ -317,7 +376,7 @@ class CodeGenerator {
 		return { conditions, errorMessages };
 	}
 
-	_getConditionsAndMessagesForObject(param, index, typeFlags, type) {
+	_getConditionsAndMessagesForObject(param, index, path, typeFlags, type) {
 		const { name } = param;
 		const conditions = [];
 		const errorMessages = [];
@@ -328,6 +387,7 @@ class CodeGenerator {
 		} = this._getConditionsAndMessagesByParam(
 			Object.assign({}, param, { type: type.subject }),
 			index,
+			path,
 			typeFlags
 		);
 
@@ -347,11 +407,15 @@ class CodeGenerator {
 			let {
 				conditions: keyConditions,
 				errorMessages: keyErrorMessages
-			} = this._getConditionsAndMessagesByParam({
-				type: type.objects[0],
-				optional: false,
-				name: keyName
-			});
+			} = this._getConditionsAndMessagesByParam(
+				{
+					type: type.objects[0],
+					optional: false,
+					name: keyName
+				},
+				0,
+				path
+			);
 
 			if (keyConditions && keyErrorMessages) {
 				keyConditions = keyConditions.map(
@@ -371,11 +435,15 @@ class CodeGenerator {
 			let {
 				conditions: valueConditions,
 				errorMessages: valueErrorMessages
-			} = this._getConditionsAndMessagesByParam({
-				type: type.objects[objectsCount - 1],
-				optional: false,
-				name: valueName
-			});
+			} = this._getConditionsAndMessagesByParam(
+				{
+					type: type.objects[objectsCount - 1],
+					optional: false,
+					name: valueName
+				},
+				0,
+				path
+			);
 
 			if (valueConditions && valueErrorMessages) {
 				valueConditions = valueConditions.map(
@@ -393,7 +461,7 @@ class CodeGenerator {
 		return { conditions, errorMessages };
 	}
 
-	_getConditionsAndMessagesForUnion(param, index, typeFlags, type) {
+	_getConditionsAndMessagesForUnion(param, index, path, typeFlags, type) {
 		const conditions = [];
 		const errorMessages = [];
 
@@ -403,6 +471,7 @@ class CodeGenerator {
 		} = this._getConditionsAndMessagesByParam(
 			Object.assign({}, param, { type: type.left }),
 			index,
+			path,
 			typeFlags
 		);
 		const {
@@ -411,6 +480,7 @@ class CodeGenerator {
 		} = this._getConditionsAndMessagesByParam(
 			Object.assign({}, param, { type: type.right }),
 			index,
+			path,
 			typeFlags
 		);
 
@@ -462,7 +532,7 @@ class CodeGenerator {
 		return { conditions, errorMessages };
 	}
 
-	_getConditionsAndMessagesForRecord(param, index, typeFlags, type) {
+	_getConditionsAndMessagesForRecord(param, index, path, typeFlags, type) {
 		const { name } = param;
 		const conditions = [];
 		const errorMessages = [];
@@ -475,6 +545,7 @@ class CodeGenerator {
 				type: { type: 'NAME', name: 'object' }
 			}),
 			index,
+			path,
 			typeFlags
 		);
 
@@ -491,11 +562,15 @@ class CodeGenerator {
 			let {
 				conditions: entryConditions,
 				errorMessages: entryErrorMessages
-			} = this._getConditionsAndMessagesByParam({
-				type: entry.value,
-				optional: entry.optional || false,
-				name: `${name}['${entry.key}']`
-			});
+			} = this._getConditionsAndMessagesByParam(
+				{
+					type: entry.value,
+					optional: entry.optional || false,
+					name: `${name}['${entry.key}']`
+				},
+				0,
+				path
+			);
 
 			if (!entryConditions || !entryErrorMessages) {
 				return;
@@ -515,7 +590,7 @@ class CodeGenerator {
 		return { conditions, errorMessages };
 	}
 
-	_getConditionsAndMessagesForVariadic(param, index, typeFlags, type) {
+	_getConditionsAndMessagesForVariadic(param, index, path, typeFlags, type) {
 		const conditions = [];
 		const errorMessages = [];
 
@@ -528,6 +603,7 @@ class CodeGenerator {
 				name: `Array.prototype.slice.call(arguments, ${index})[0]`
 			}),
 			index,
+			path,
 			typeFlags
 		);
 
@@ -672,12 +748,19 @@ class CodeGenerator {
 			});
 	}
 
-	_getObjectProperties(params, objName) {
-		const properties = params.filter(
-			({ name }) =>
-				name.indexOf(`${objName}.`) === 0 &&
-				!name.replace(`${objName}.`, '').includes('.')
-		);
+	_getObjectProperties(params, objName, filterByName = true) {
+		let properties;
+
+		if (filterByName) {
+			properties = params.filter(
+				({ name }) =>
+					name.indexOf(`${objName}.`) === 0 &&
+					!name.replace(`${objName}.`, '').includes('.')
+			);
+		} else {
+			properties = params;
+		}
+
 		const names = [];
 		const entries = properties.map(param => {
 			const { name, type } = param;
@@ -722,6 +805,37 @@ class CodeGenerator {
 				t.subject.type === 'NAME' &&
 				t.subject.name.toLowerCase() === 'object')
 		);
+	}
+
+	_findTypedef(typeName, path) {
+		let properComment = null;
+		path.hub.file.ast.comments.some(commentBlock => {
+			if (commentBlock.type !== 'CommentBlock') {
+				return false;
+			}
+
+			const comment = new Comment(`/*${commentBlock.value}*/`);
+			const [typedefTag] = comment.findTags('typedef');
+
+			if (
+				typedefTag &&
+				typedefTag.name &&
+				typedefTag.name.toLowerCase() === typeName
+			) {
+				properComment = comment;
+
+				return true;
+			}
+		});
+
+		return properComment;
+	}
+
+	_getTypedefType(typedef) {
+		const [typedefTag] = typedef.findTags('typedef');
+		const { type } = Comment.parseTagType(typedefTag);
+
+		return type;
 	}
 }
 

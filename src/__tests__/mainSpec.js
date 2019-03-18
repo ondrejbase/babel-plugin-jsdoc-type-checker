@@ -480,6 +480,112 @@ describe('main', () => {
 		expect(code).toMatchSnapshot();
 	});
 
+	it('should prepend a type checking to getFullName()', () => {
+		const { code } = transform(
+			`
+			/**
+			 * A person
+			 * @typedef {Object} Person
+			 * @property {string} firstname A person's firstname.
+			 * @property {string} surname A person's surname.
+			 */
+
+			/**
+			 * Class Foo.
+			 */
+			class Foo {
+				/**
+				 * Returns a full name of a person.
+				 *
+				 * @typechecked
+				 * @param {Person} person A person.
+				 * @return {string} The person's full name.
+				 */
+				getFullName(person) {
+					return person.firstname + ' ' + person.surname;
+				}
+			}`,
+			TRANSFORM_OPTIONS
+		);
+		expect(code).toMatchSnapshot();
+	});
+
+	it('should prepend a type checking to getPersonInfo()', () => {
+		const { code } = transform(
+			`
+			/**
+			 * A person's age.
+			 * @typedef {number} Age
+			 */
+
+			/**
+			 * A person.
+			 * @typedef {Object} Person
+			 * @property {string} firstname A person's firstname.
+			 * @property {string} surname A person's surname.
+			 * @property {Age} age A person's age.
+			 */
+
+			/**
+			 * Class Foo.
+			 */
+			class Foo {
+				/**
+				 * Returns person's info.
+				 *
+				 * @typechecked
+				 * @param {Person} person A person.
+				 * @return {string} The person's full name.
+				 */
+				getPersonInfo(person) {
+					const { age, firstname, surname } = person;
+
+					return \`\${firstname} \${surname} (\${age})\`;
+				}
+			}`,
+			TRANSFORM_OPTIONS
+		);
+		expect(code).toMatchSnapshot();
+	});
+
+	it('should prepend a type checking to getPersonInfo()', () => {
+		const { code } = transform(
+			`
+			/**
+			 * A person.
+			 * @typedef {Object} Person
+			 * @property {string} firstname A person's firstname.
+			 * @property {string} surname A person's surname.
+			 */
+
+			/**
+			 * A persons list.
+			 * @typedef {Array.<!Person>} PersonsList
+			 */
+
+			/**
+			 * Class Foo.
+			 */
+			class Foo {
+				/**
+				 * Generates a HTML code containing all persons from the list.
+				 *
+				 * @typechecked
+				 * @param {PersonsList} personsList A persons list.
+				 * @return {string} A HTML code containing all persons.
+				 */
+				generatePersonsHtml(personsList) {
+					return '<ul>' + personsList.reduce((acc, value) => {
+						return acc +
+							\`<li>\${value.firstname} \${value.surname}</li>\`;
+					}, '') + '</ul>';
+				}
+			}`,
+			TRANSFORM_OPTIONS
+		);
+		expect(code).toMatchSnapshot();
+	});
+
 	it('should not generate anything because the environment is production', () => {
 		setNodeEnv('prod');
 		const { code } = transform(
