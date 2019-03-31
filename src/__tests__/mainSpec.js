@@ -548,7 +548,7 @@ describe('main', () => {
 		expect(code).toMatchSnapshot();
 	});
 
-	it('should prepend a type checking to getPersonInfo()', () => {
+	it('should prepend a type checking to generatePersonsHtml()', () => {
 		const { code } = transform(
 			`
 			/**

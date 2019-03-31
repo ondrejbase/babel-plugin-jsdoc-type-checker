@@ -80,6 +80,8 @@ class Foo {
 
 This generated code contains [Facebook's `invariant`](https://www.npmjs.com/package/invariant). You could generate a code that like this, if you set `checkingTemplate` option to `` `invariant(!(\${condition}), \${errorMessage});` ``.
 
+It also supports `@typedef` tags.
+
 ## Installation
 ```sh
 npm install babel-plugin-jsdoc-type-checker --save-dev

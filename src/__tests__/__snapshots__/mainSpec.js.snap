@@ -727,6 +727,55 @@ class Foo {
 }"
 `;
 
+exports[`main should prepend a type checking to generatePersonsHtml() 1`] = `
+"/**
+ * A person.
+ * @typedef {Object} Person
+ * @property {string} firstname A person's firstname.
+ * @property {string} surname A person's surname.
+ */
+
+/**
+ * A persons list.
+ * @typedef {Array.<!Person>} PersonsList
+ */
+
+/**
+ * Class Foo.
+ */
+class Foo {
+  /**
+   * Generates a HTML code containing all persons from the list.
+   *
+   * @typechecked
+   * @param {PersonsList} personsList A persons list.
+   * @return {string} A HTML code containing all persons.
+   */
+  generatePersonsHtml(personsList) {
+    if (Object.prototype.toString.call(personsList) !== '[object Array]') {
+      throw new TypeError('Argument personsList must be an array.');
+    }
+
+    if (Object.prototype.toString.call(personsList) === '[object Array]' && personsList.length > 0 && (Object.prototype.toString.call(personsList[0]) !== '[object Object]' || personsList[0] === null)) {
+      throw new TypeError('Argument personsList[0] must be an object.');
+    }
+
+    if (Object.prototype.toString.call(personsList) === '[object Array]' && personsList.length > 0 && Object.prototype.toString.call(personsList[0]) === '[object Object]' && 'firstname' in personsList[0] && typeof personsList[0]['firstname'] !== 'string') {
+      throw new TypeError('Argument personsList[0][\\\\'firstname\\\\'] must be a string.');
+    }
+
+    if (Object.prototype.toString.call(personsList) === '[object Array]' && personsList.length > 0 && Object.prototype.toString.call(personsList[0]) === '[object Object]' && 'surname' in personsList[0] && typeof personsList[0]['surname'] !== 'string') {
+      throw new TypeError('Argument personsList[0][\\\\'surname\\\\'] must be a string.');
+    }
+
+    return '<ul>' + personsList.reduce((acc, value) => {
+      return acc + \`<li>\${value.firstname} \${value.surname}</li>\`;
+    }, '') + '</ul>';
+  }
+
+}"
+`;
+
 exports[`main should prepend a type checking to getFullName() 1`] = `
 "/**
  * A person
@@ -813,55 +862,6 @@ class Foo {
       surname
     } = person;
     return \`\${firstname} \${surname} (\${age})\`;
-  }
-
-}"
-`;
-
-exports[`main should prepend a type checking to getPersonInfo() 2`] = `
-"/**
- * A person.
- * @typedef {Object} Person
- * @property {string} firstname A person's firstname.
- * @property {string} surname A person's surname.
- */
-
-/**
- * A persons list.
- * @typedef {Array.<!Person>} PersonsList
- */
-
-/**
- * Class Foo.
- */
-class Foo {
-  /**
-   * Generates a HTML code containing all persons from the list.
-   *
-   * @typechecked
-   * @param {PersonsList} personsList A persons list.
-   * @return {string} A HTML code containing all persons.
-   */
-  generatePersonsHtml(personsList) {
-    if (Object.prototype.toString.call(personsList) !== '[object Array]') {
-      throw new TypeError('Argument personsList must be an array.');
-    }
-
-    if (Object.prototype.toString.call(personsList) === '[object Array]' && personsList.length > 0 && (Object.prototype.toString.call(personsList[0]) !== '[object Object]' || personsList[0] === null)) {
-      throw new TypeError('Argument personsList[0] must be an object.');
-    }
-
-    if (Object.prototype.toString.call(personsList) === '[object Array]' && personsList.length > 0 && Object.prototype.toString.call(personsList[0]) === '[object Object]' && 'firstname' in personsList[0] && typeof personsList[0]['firstname'] !== 'string') {
-      throw new TypeError('Argument personsList[0][\\\\'firstname\\\\'] must be a string.');
-    }
-
-    if (Object.prototype.toString.call(personsList) === '[object Array]' && personsList.length > 0 && Object.prototype.toString.call(personsList[0]) === '[object Object]' && 'surname' in personsList[0] && typeof personsList[0]['surname'] !== 'string') {
-      throw new TypeError('Argument personsList[0][\\\\'surname\\\\'] must be a string.');
-    }
-
-    return '<ul>' + personsList.reduce((acc, value) => {
-      return acc + \`<li>\${value.firstname} \${value.surname}</li>\`;
-    }, '') + '</ul>';
   }
 
 }"
