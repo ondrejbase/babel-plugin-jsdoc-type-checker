@@ -63,6 +63,24 @@ class TypeChecker {
 
 					if (generatedNodes) {
 						node.body.body.unshift(...generatedNodes);
+
+						if (options.importTemplate) {
+							const importNodes = codeGenerator.generateImport(
+								options.importTemplate
+							);
+
+							if (
+								!importNodes ||
+								!importNodes[0] ||
+								this._findIdenticalImport(path, importNodes[0])
+							) {
+								return;
+							}
+
+							path.hub.file.ast.program.body.unshift(
+								...importNodes
+							);
+						}
 					}
 				}
 			}
@@ -90,6 +108,24 @@ class TypeChecker {
 		});
 
 		return properComment;
+	}
+
+	_findIdenticalImport(path, importNode) {
+		if (!importNode || importNode.type !== 'ImportDeclaration') {
+			return false;
+		}
+
+		return importNode.specifiers.some(specifier => {
+			const localName = specifier.local.name;
+
+			return path.hub.file.ast.program.body.some(
+				node =>
+					node.type === 'ImportDeclaration' &&
+					node.specifiers.some(
+						specifier => specifier.local.name === localName
+					)
+			);
+		});
 	}
 }
 

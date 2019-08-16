@@ -127,6 +127,13 @@ This option determinates how the generated code looks like. Its value is an ES6 
 - `\${condition}` is a placeholder for a generated condition,
 - `\${errorMessage}` is a placeholder for a generated error message.
 
+### `importTemplate`
+
+`string`, defaults to `''`
+
+The plugin generates an import statement automatically if you set this option, but only if an identical import statement is not present in the code.
+Example value: `` `import invariant from 'invariant';` ``
+
 ### `supportedEnvironments`
 
 `string[]`, defaults to `['dev', 'development', 'test']`

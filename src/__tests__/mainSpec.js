@@ -716,4 +716,154 @@ describe('main', () => {
 		);
 		expect(code).toMatchSnapshot();
 	});
+
+	it(`should add an import statement to Foo's file`, () => {
+		const { code } = transform(
+			`
+			/**
+			 * Class Foo.
+			 */
+			class Foo {
+				/**
+				 * Returns the sum of x, y (optional).
+				 *
+				 * @typechecked
+				 * @param {number} x The first number.
+				 * @param {number} [y=0] The second number.
+				 * @return {number} The sum of x and y.
+				 */
+				sum(x, y = 0) {
+					return x + y;
+				}
+			}`,
+			{
+				plugins: [
+					[
+						plugin,
+						{
+							checkingTemplate: `
+								invariant(!(\${condition}), \${errorMessage});`,
+							importTemplate: `
+								import invariant from 'invariant';`
+						}
+					]
+				]
+			}
+		);
+		expect(code).toMatchSnapshot();
+	});
+
+	it(`should not add an import statement to Foo's file, because it is already there`, () => {
+		const { code } = transform(
+			`
+			import invariant from 'invariant';
+
+			/**
+			 * Class Foo.
+			 */
+			class Foo {
+				/**
+				 * Returns the sum of x, y (optional).
+				 *
+				 * @typechecked
+				 * @param {number} x The first number.
+				 * @param {number} [y=0] The second number.
+				 * @return {number} The sum of x and y.
+				 */
+				sum(x, y = 0) {
+					return x + y;
+				}
+			}`,
+			{
+				plugins: [
+					[
+						plugin,
+						{
+							checkingTemplate: `
+								invariant(!(\${condition}), \${errorMessage});`,
+							importTemplate: `
+								import invariant from 'invariant';`
+						}
+					]
+				]
+			}
+		);
+		expect(code).toMatchSnapshot();
+	});
+
+	it(`should not add an import statement to Foo's file, because it is already there (default as)`, () => {
+		const { code } = transform(
+			`
+			import { default as invariant } from 'invariant';
+
+			/**
+			 * Class Foo.
+			 */
+			class Foo {
+				/**
+				 * Returns the sum of x, y (optional).
+				 *
+				 * @typechecked
+				 * @param {number} x The first number.
+				 * @param {number} [y=0] The second number.
+				 * @return {number} The sum of x and y.
+				 */
+				sum(x, y = 0) {
+					return x + y;
+				}
+			}`,
+			{
+				plugins: [
+					[
+						plugin,
+						{
+							checkingTemplate: `
+								invariant(!(\${condition}), \${errorMessage});`,
+							importTemplate: `
+								import invariant from 'invariant';`
+						}
+					]
+				]
+			}
+		);
+		expect(code).toMatchSnapshot();
+	});
+
+	it(`should add an import statement to Foo's file, because it has been renamed`, () => {
+		const { code } = transform(
+			`
+			import { default as aliasedInvariant } from 'invariant';
+
+			/**
+			 * Class Foo.
+			 */
+			class Foo {
+				/**
+				 * Returns the sum of x, y (optional).
+				 *
+				 * @typechecked
+				 * @param {number} x The first number.
+				 * @param {number} [y=0] The second number.
+				 * @return {number} The sum of x and y.
+				 */
+				sum(x, y = 0) {
+					return x + y;
+				}
+			}`,
+			{
+				plugins: [
+					[
+						plugin,
+						{
+							checkingTemplate: `
+								invariant(!(\${condition}), \${errorMessage});`,
+							importTemplate: `
+								import invariant from 'invariant';`
+						}
+					]
+				]
+			}
+		);
+		expect(code).toMatchSnapshot();
+	});
 });

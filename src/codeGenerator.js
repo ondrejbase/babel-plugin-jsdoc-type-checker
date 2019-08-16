@@ -73,6 +73,27 @@ class CodeGenerator {
 		return codeFragments.join('\n');
 	}
 
+	generateImport(template) {
+		if (!template) {
+			return null;
+		}
+
+		const ast = parse(template, {
+			sourceType: 'module'
+		});
+
+		if (
+			ast &&
+			ast.program &&
+			ast.program.body &&
+			ast.program.body.length > 0
+		) {
+			return ast.program.body;
+		} else {
+			return null;
+		}
+	}
+
 	_getConditionsAndMessagesByParam(param, index, path, typeFlags = {}) {
 		let { name, optional } = param;
 		let flags = Object.assign(

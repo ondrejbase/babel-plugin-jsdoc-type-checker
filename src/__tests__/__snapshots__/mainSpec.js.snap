@@ -1,5 +1,102 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`main should add an import statement to Foo's file 1`] = `
+"import invariant from 'invariant';
+
+/**
+ * Class Foo.
+ */
+class Foo {
+  /**
+   * Returns the sum of x, y (optional).
+   *
+   * @typechecked
+   * @param {number} x The first number.
+   * @param {number} [y=0] The second number.
+   * @return {number} The sum of x and y.
+   */
+  sum(x, y = 0) {
+    invariant(!(typeof x !== 'number'), 'Argument x must be a number.');
+    invariant(!(y !== null && y !== undefined && typeof y !== 'number'), 'Argument y (optional) must be a number.');
+    return x + y;
+  }
+
+}"
+`;
+
+exports[`main should add an import statement to Foo's file, because it has been renamed 1`] = `
+"import invariant from 'invariant';
+import { default as aliasedInvariant } from 'invariant';
+/**
+ * Class Foo.
+ */
+
+class Foo {
+  /**
+   * Returns the sum of x, y (optional).
+   *
+   * @typechecked
+   * @param {number} x The first number.
+   * @param {number} [y=0] The second number.
+   * @return {number} The sum of x and y.
+   */
+  sum(x, y = 0) {
+    invariant(!(typeof x !== 'number'), 'Argument x must be a number.');
+    invariant(!(y !== null && y !== undefined && typeof y !== 'number'), 'Argument y (optional) must be a number.');
+    return x + y;
+  }
+
+}"
+`;
+
+exports[`main should not add an import statement to Foo's file, because it is already there (default as) 1`] = `
+"import { default as invariant } from 'invariant';
+/**
+ * Class Foo.
+ */
+
+class Foo {
+  /**
+   * Returns the sum of x, y (optional).
+   *
+   * @typechecked
+   * @param {number} x The first number.
+   * @param {number} [y=0] The second number.
+   * @return {number} The sum of x and y.
+   */
+  sum(x, y = 0) {
+    invariant(!(typeof x !== 'number'), 'Argument x must be a number.');
+    invariant(!(y !== null && y !== undefined && typeof y !== 'number'), 'Argument y (optional) must be a number.');
+    return x + y;
+  }
+
+}"
+`;
+
+exports[`main should not add an import statement to Foo's file, because it is already there 1`] = `
+"import invariant from 'invariant';
+/**
+ * Class Foo.
+ */
+
+class Foo {
+  /**
+   * Returns the sum of x, y (optional).
+   *
+   * @typechecked
+   * @param {number} x The first number.
+   * @param {number} [y=0] The second number.
+   * @return {number} The sum of x and y.
+   */
+  sum(x, y = 0) {
+    invariant(!(typeof x !== 'number'), 'Argument x must be a number.');
+    invariant(!(y !== null && y !== undefined && typeof y !== 'number'), 'Argument y (optional) must be a number.');
+    return x + y;
+  }
+
+}"
+`;
+
 exports[`main should not generate anything because the checker tag is not present 1`] = `
 "/**
  * Class Foo.

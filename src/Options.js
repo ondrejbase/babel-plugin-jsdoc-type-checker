@@ -3,6 +3,7 @@ const CHECKING_TEMPLATE = `
 	if (\${condition}) {
 		throw new TypeError(\${errorMessage});
 	}`;
+const IMPORT_TEMPLATE = '';
 const SUPPORTED_ENVIRONMENTS = ['dev', 'development', 'test'];
 
 export default class Options {
@@ -10,6 +11,7 @@ export default class Options {
 		const {
 			checkerTag = CHECKER_TAG,
 			checkingTemplate = CHECKING_TEMPLATE,
+			importTemplate = IMPORT_TEMPLATE,
 			supportedEnvironments = SUPPORTED_ENVIRONMENTS
 		} = pluginOptions || {};
 
@@ -21,6 +23,10 @@ export default class Options {
 			throw new TypeError('Option checkingTemplate must be a string.');
 		}
 
+		if (importTemplate && typeof importTemplate !== 'string') {
+			throw new TypeError('Option importTemplate must be a string.');
+		}
+
 		if (!supportedEnvironments || !Array.isArray(supportedEnvironments)) {
 			throw new TypeError(
 				'Option supportedEnvironments must be an array.'
@@ -29,6 +35,7 @@ export default class Options {
 
 		this.checkerTag = checkerTag;
 		this.checkingTemplate = checkingTemplate;
+		this.importTemplate = importTemplate || null;
 		this.supportedEnvironments = supportedEnvironments;
 	}
 
