@@ -37,6 +37,7 @@ export default class Comment {
 
 	getParamsList() {
 		return this.getParams()
+			.filter(param => !param.name.includes('.'))
 			.map(param => (param.optional ? `[${param.name}]` : param.name))
 			.join(', ');
 	}

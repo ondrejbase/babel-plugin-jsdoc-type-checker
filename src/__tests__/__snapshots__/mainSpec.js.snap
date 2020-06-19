@@ -755,19 +755,19 @@ class Foo {
    */
   toCBAD(obj, d) {
     if (Object.prototype.toString.call(obj) !== '[object Object]') {
-      throw new TypeError('Foo.toCBAD(obj, obj.a, [obj.b], obj.c, d): Argument obj expected to be an object.');
+      throw new TypeError('Foo.toCBAD(obj, d): Argument obj expected to be an object.');
     }
 
     if (Object.prototype.toString.call(obj) === '[object Object]' && 'a' in obj && typeof obj['a'] !== 'number') {
-      throw new TypeError('Foo.toCBAD(obj, obj.a, [obj.b], obj.c, d): Argument obj[\\\\'a\\\\'] expected to be a number.');
+      throw new TypeError('Foo.toCBAD(obj, d): Argument obj[\\\\'a\\\\'] expected to be a number.');
     }
 
     if (Object.prototype.toString.call(obj) === '[object Object]' && 'b' in obj && obj['b'] !== null && obj['b'] !== undefined && typeof obj['b'] !== 'string') {
-      throw new TypeError('Foo.toCBAD(obj, obj.a, [obj.b], obj.c, d): Argument [obj[\\\\'b\\\\']] expected to be a string.');
+      throw new TypeError('Foo.toCBAD(obj, d): Argument [obj[\\\\'b\\\\']] expected to be a string.');
     }
 
     if (typeof d !== 'string') {
-      throw new TypeError('Foo.toCBAD(obj, obj.a, [obj.b], obj.c, d): Argument d expected to be a string.');
+      throw new TypeError('Foo.toCBAD(obj, d): Argument d expected to be a string.');
     }
 
     const {
@@ -796,23 +796,23 @@ class Foo {
 
   toCBAD2(obj, d) {
     if (obj !== null && obj !== undefined && Object.prototype.toString.call(obj) !== '[object Object]') {
-      throw new TypeError('Foo.toCBAD2(obj, obj.a, obj.inner, obj.inner.b, obj.inner.c, d): Argument [obj] expected to be an object.');
+      throw new TypeError('Foo.toCBAD2(obj, d): Argument [obj] expected to be an object.');
     }
 
     if (Object.prototype.toString.call(obj) === '[object Object]' && 'a' in obj && obj['a'] !== null && obj['a'] !== undefined && typeof obj['a'] !== 'number') {
-      throw new TypeError('Foo.toCBAD2(obj, obj.a, obj.inner, obj.inner.b, obj.inner.c, d): Argument [obj[\\\\'a\\\\']] expected to be a number.');
+      throw new TypeError('Foo.toCBAD2(obj, d): Argument [obj[\\\\'a\\\\']] expected to be a number.');
     }
 
     if (Object.prototype.toString.call(obj) === '[object Object]' && 'inner' in obj && obj['inner'] !== null && obj['inner'] !== undefined && Object.prototype.toString.call(obj['inner']) !== '[object Object]') {
-      throw new TypeError('Foo.toCBAD2(obj, obj.a, obj.inner, obj.inner.b, obj.inner.c, d): Argument [obj[\\\\'inner\\\\']] expected to be an object.');
+      throw new TypeError('Foo.toCBAD2(obj, d): Argument [obj[\\\\'inner\\\\']] expected to be an object.');
     }
 
     if (Object.prototype.toString.call(obj) === '[object Object]' && 'inner' in obj && Object.prototype.toString.call(obj['inner']) === '[object Object]' && 'b' in obj['inner'] && typeof obj['inner']['b'] !== 'string' && obj['inner']['b'] !== null) {
-      throw new TypeError('Foo.toCBAD2(obj, obj.a, obj.inner, obj.inner.b, obj.inner.c, d): Argument obj[\\\\'inner\\\\'][\\\\'b\\\\'] expected to be a string.');
+      throw new TypeError('Foo.toCBAD2(obj, d): Argument obj[\\\\'inner\\\\'][\\\\'b\\\\'] expected to be a string.');
     }
 
     if (typeof d !== 'string') {
-      throw new TypeError('Foo.toCBAD2(obj, obj.a, obj.inner, obj.inner.b, obj.inner.c, d): Argument d expected to be a string.');
+      throw new TypeError('Foo.toCBAD2(obj, d): Argument d expected to be a string.');
     }
 
     const {
