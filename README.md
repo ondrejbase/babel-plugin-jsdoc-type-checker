@@ -41,11 +41,11 @@ class Foo {
    */
   sum(x, y = 0) {
     if (typeof x !== 'number') {
-      throw new TypeError('Argument x must be a number.');
+      throw new TypeError('Foo.sum(x, [y]): Argument x expected to be a number.');
     }
 		
     if (y !== null && y !== undefined && typeof y !== 'number') {
-      throw new TypeError('Argument y (optional) must be a number.');
+      throw new TypeError('Foo.sum(x, [y]): Argument [y] expected to be a number.');
     }
 
     return x + y;
@@ -71,14 +71,14 @@ class Foo {
    * @return {number} The sum of x and y.
    */
   sum(x, y = 0) {
-    invariant(!(typeof x !== 'number'), 'Argument x must be a number.');
-    invariant(!(y !== null && y !== undefined && typeof y !== 'number'), 'Argument y (optional) must be a number.');
+    invariant(!(typeof x !== 'number'), 'Foo.sum(x, [y]): Argument x expected to be a number.');
+    invariant(!(y !== null && y !== undefined && typeof y !== 'number'), 'Foo.sum(x, [y]): Argument [y] expected to be a number.');
     return x + y;
   }
 }
 ```
 
-This generated code contains [Facebook's `invariant`](https://www.npmjs.com/package/invariant). You could generate a code that like this, if you set `checkingTemplate` option to `` `invariant(!(\${condition}), \${errorMessage});` ``.
+This generated code contains [Facebook's `invariant`](https://www.npmjs.com/package/invariant). You could generate a code that like this, if you set `checkingTemplate` option to `` `invariant(!(\${condition}), '\${className}.\${methodName}(\${paramsList}): Argument \${paramName} expected to be \${expectedType}.');` ``.
 
 It also supports `@typedef` tags.
 
@@ -120,12 +120,17 @@ comment block that contain a tag that equals to this option's value.
 `string`, defaults to
 ``
 `if (\${condition}) {
-	throw new TypeError(\${errorMessage});
+	throw new TypeError('\${className}.\${methodName}(\${paramsList}): Argument \${paramName} expected to be \${expectedType}.');
 }` ``
 
 This option determinates how the generated code looks like. Its value is an ES6 template string with some escaped placeholders:
+- `\${className}` is a name of the class, in which we are checking the type,
 - `\${condition}` is a placeholder for a generated condition,
-- `\${errorMessage}` is a placeholder for a generated error message.
+- `\${expectedType}` is an expected type of the parameter, that is being checked, 
+- `\${methodName}` is a name of the method, in which we are checking the type,
+- `\${paramName}` is a name of the parameter, that is being checked (a name of
+  the parameter is enclosed into square brackets `[]`, if the parameter is optional)
+- `\${paramList}` is a list of the method's parameters,
 
 ### `importTemplate`
 

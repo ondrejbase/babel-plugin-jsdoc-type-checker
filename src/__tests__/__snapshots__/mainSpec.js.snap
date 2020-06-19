@@ -16,8 +16,8 @@ class Foo {
    * @return {number} The sum of x and y.
    */
   sum(x, y = 0) {
-    invariant(!(typeof x !== 'number'), 'Argument x must be a number.');
-    invariant(!(y !== null && y !== undefined && typeof y !== 'number'), 'Argument y (optional) must be a number.');
+    invariant(!(typeof x !== 'number'), 'Foo.sum(x, [y]): Argument x expected to be a number.');
+    invariant(!(y !== null && y !== undefined && typeof y !== 'number'), 'Foo.sum(x, [y]): Argument [y] expected to be a number.');
     return x + y;
   }
 
@@ -41,8 +41,8 @@ class Foo {
    * @return {number} The sum of x and y.
    */
   sum(x, y = 0) {
-    invariant(!(typeof x !== 'number'), 'Argument x must be a number.');
-    invariant(!(y !== null && y !== undefined && typeof y !== 'number'), 'Argument y (optional) must be a number.');
+    invariant(!(typeof x !== 'number'), 'Foo.sum(x, [y]): Argument x expected to be a number.');
+    invariant(!(y !== null && y !== undefined && typeof y !== 'number'), 'Foo.sum(x, [y]): Argument [y] expected to be a number.');
     return x + y;
   }
 
@@ -65,8 +65,8 @@ class Foo {
    * @return {number} The sum of x and y.
    */
   sum(x, y = 0) {
-    invariant(!(typeof x !== 'number'), 'Argument x must be a number.');
-    invariant(!(y !== null && y !== undefined && typeof y !== 'number'), 'Argument y (optional) must be a number.');
+    invariant(!(typeof x !== 'number'), 'Foo.sum(x, [y]): Argument x expected to be a number.');
+    invariant(!(y !== null && y !== undefined && typeof y !== 'number'), 'Foo.sum(x, [y]): Argument [y] expected to be a number.');
     return x + y;
   }
 
@@ -89,8 +89,8 @@ class Foo {
    * @return {number} The sum of x and y.
    */
   sum(x, y = 0) {
-    invariant(!(typeof x !== 'number'), 'Argument x must be a number.');
-    invariant(!(y !== null && y !== undefined && typeof y !== 'number'), 'Argument y (optional) must be a number.');
+    invariant(!(typeof x !== 'number'), 'Foo.sum(x, [y]): Argument x expected to be a number.');
+    invariant(!(y !== null && y !== undefined && typeof y !== 'number'), 'Foo.sum(x, [y]): Argument [y] expected to be a number.');
     return x + y;
   }
 
@@ -151,11 +151,11 @@ class Foo {
    */
   and(x, y) {
     if (typeof x !== 'boolean') {
-      throw new TypeError('Argument x must be a boolean.');
+      throw new TypeError('Foo.and(x, y): Argument x expected to be a boolean.');
     }
 
     if (y !== null && y !== undefined && typeof y !== 'boolean') {
-      throw new TypeError('Argument y (optional) must be a boolean.');
+      throw new TypeError('Foo.and(x, y): Argument [y] expected to be a boolean.');
     }
 
     return x && (y !== null && y !== undefined ? y : true);
@@ -179,11 +179,11 @@ class Foo {
    */
   concat(x, y = '') {
     if (typeof x !== 'string') {
-      throw new TypeError('Argument x must be a string.');
+      throw new TypeError('Foo.concat(x, [y]): Argument x expected to be a string.');
     }
 
     if (y !== null && y !== undefined && typeof y !== 'string') {
-      throw new TypeError('Argument y (optional) must be a string.');
+      throw new TypeError('Foo.concat(x, [y]): Argument [y] expected to be a string.');
     }
 
     return x + y;
@@ -209,11 +209,11 @@ class Foo {
    */
   joinArray(arr, separator = ',') {
     if (Object.prototype.toString.call(arr) !== '[object Array]') {
-      throw new TypeError('Argument arr must be an array.');
+      throw new TypeError('Foo.joinArray(arr): Argument arr expected to be an array.');
     }
 
     if (Object.prototype.toString.call(arr) === '[object Array]' && arr.length > 0 && typeof arr[0] !== 'string') {
-      throw new TypeError('Argument arr[0] must be a string.');
+      throw new TypeError('Foo.joinArray(arr): Argument arr[0] expected to be a string.');
     }
 
     return arr.join(separator);
@@ -232,11 +232,11 @@ class Foo {
 
   joinArray2(arr, separator = ',') {
     if (arr !== null && arr !== undefined && Object.prototype.toString.call(arr) !== '[object Array]') {
-      throw new TypeError('Argument arr (optional) must be an array.');
+      throw new TypeError('Foo.joinArray2(arr): Argument [arr] expected to be an array.');
     }
 
     if (Object.prototype.toString.call(arr) === '[object Array]' && arr.length > 0 && typeof arr[0] !== 'string') {
-      throw new TypeError('Argument arr[0] must be a string.');
+      throw new TypeError('Foo.joinArray2(arr): Argument arr[0] expected to be a string.');
     }
 
     return (arr || []).join(separator);
@@ -259,7 +259,7 @@ class Foo {
    */
   negate(value) {
     if (typeof value !== 'boolean' && typeof value !== 'number' && typeof value !== 'string') {
-      throw new TypeError('Argument value must be a boolean. OR Argument value must be a number. OR Argument value must be a string.');
+      throw new TypeError('Foo.negate(value): Argument value expected to be a boolean or a number or a string.');
     }
 
     return !value;
@@ -275,7 +275,7 @@ class Foo {
 
   negate2(value) {
     if ((value !== null && value !== undefined && typeof value !== 'boolean' || value === null) && (value !== null && value !== undefined && typeof value !== 'number' || value === null) && (value !== null && value !== undefined && typeof value !== 'string' || value === null)) {
-      throw new TypeError('Argument value (optional) must be a boolean. OR Argument value (optional) must be a number. OR Argument value (optional) must be a string.');
+      throw new TypeError('Foo.negate2(value): Argument [value] expected to be a boolean or a number or a string.');
     }
 
     return !value;
@@ -298,7 +298,7 @@ class Foo {
    */
   processUserInput(callback) {
     if (typeof callback !== 'function') {
-      throw new TypeError('Argument callback must be a function.');
+      throw new TypeError('Foo.processUserInput(callback): Argument callback expected to be a function.');
     }
 
     var name = prompt('Please enter your name.');
@@ -325,11 +325,11 @@ class Foo {
    */
   push(arr, ...elements) {
     if (Object.prototype.toString.call(arr) !== '[object Array]') {
-      throw new TypeError('Argument arr must be an array.');
+      throw new TypeError('Foo.push(arr, [elements]): Argument arr expected to be an array.');
     }
 
     if (Array.prototype.slice.call(arguments, 1)[0] !== null && Array.prototype.slice.call(arguments, 1)[0] !== undefined && typeof Array.prototype.slice.call(arguments, 1)[0] !== 'number' && Array.prototype.slice.call(arguments, 1)[0] !== null && Array.prototype.slice.call(arguments, 1)[0] !== undefined && typeof Array.prototype.slice.call(arguments, 1)[0] !== 'string') {
-      throw new TypeError('Argument Array.prototype.slice.call(arguments, 1)[0] (optional) must be a number. OR Argument Array.prototype.slice.call(arguments, 1)[0] (optional) must be a string.');
+      throw new TypeError('Foo.push(arr, [elements]): Argument [Array.prototype.slice.call(arguments, 1)[0]] expected to be a number or a string.');
     }
 
     return arr.push(...elements);
@@ -348,11 +348,11 @@ class Foo {
 
   push2(arr, ...elements) {
     if (Object.prototype.toString.call(arr) !== '[object Array]') {
-      throw new TypeError('Argument arr must be an array.');
+      throw new TypeError('Foo.push2(arr, elements): Argument arr expected to be an array.');
     }
 
     if (Array.prototype.slice.call(arguments, 1)[0] !== null && Array.prototype.slice.call(arguments, 1)[0] !== undefined && typeof Array.prototype.slice.call(arguments, 1)[0] !== 'number' && Array.prototype.slice.call(arguments, 1)[0] !== null && Array.prototype.slice.call(arguments, 1)[0] !== undefined && typeof Array.prototype.slice.call(arguments, 1)[0] !== 'string') {
-      throw new TypeError('Argument Array.prototype.slice.call(arguments, 1)[0] (optional) must be a number. OR Argument Array.prototype.slice.call(arguments, 1)[0] (optional) must be a string.');
+      throw new TypeError('Foo.push2(arr, elements): Argument [Array.prototype.slice.call(arguments, 1)[0]] expected to be a number or a string.');
     }
 
     return arr.push(...elements);
@@ -371,7 +371,7 @@ class Foo {
 
   push3(arr, ...elements) {
     if (Object.prototype.toString.call(arr) !== '[object Array]') {
-      throw new TypeError('Argument arr must be an array.');
+      throw new TypeError('Foo.push3(arr, [elements]): Argument arr expected to be an array.');
     }
 
     return arr.push(...elements);
@@ -394,7 +394,7 @@ class Foo {
    */
   size(obj) {
     if (obj !== null && obj !== undefined && Object.prototype.toString.call(obj) !== '[object Object]' || obj === null) {
-      throw new TypeError('Argument obj (optional) must be an object.');
+      throw new TypeError('Foo.size(obj): Argument [obj] expected to be an object.');
     }
 
     return Object.keys(obj).length;
@@ -410,7 +410,7 @@ class Foo {
 
   size2(obj) {
     if (obj !== null && obj !== undefined && Object.prototype.toString.call(obj) !== '[object Object]' && obj !== null) {
-      throw new TypeError('Argument obj (optional) must be an object.');
+      throw new TypeError('Foo.size2(obj): Argument [obj] expected to be an object.');
     }
 
     return Object.keys(obj || {}).length;
@@ -434,11 +434,11 @@ class Foo {
    */
   sum(x, y = 0) {
     if (typeof x !== 'number') {
-      throw new TypeError('Argument x must be a number.');
+      throw new TypeError('Foo.sum(x, [y]): Argument x expected to be a number.');
     }
 
     if (y !== null && y !== undefined && typeof y !== 'number') {
-      throw new TypeError('Argument y (optional) must be a number.');
+      throw new TypeError('Foo.sum(x, [y]): Argument [y] expected to be a number.');
     }
 
     return x + y;
@@ -463,11 +463,40 @@ class Foo {
    */
   sum(x, y = 0) {
     if (typeof x !== 'number') {
-      throw new TypeError('Argument x must be a number.');
+      throw new TypeError('Foo.sum(x, [y]): Argument x expected to be a number.');
     }
 
     if (y !== null && y !== undefined && typeof y !== 'number') {
-      throw new TypeError('Argument y (optional) must be a number.');
+      throw new TypeError('Foo.sum(x, [y]): Argument [y] expected to be a number.');
+    }
+
+    return x + y;
+  }
+
+}"
+`;
+
+exports[`main should prepend a type checking to Foo#sum() because the checker tag is present on the export default level 1`] = `
+"/**
+ * Class Foo.
+ *
+ * @typechecked
+ */
+export default class Foo {
+  /**
+   * Returns the sum of x, y (optional).
+   *
+   * @param {number} x The first number.
+   * @param {number} [y=0] The second number.
+   * @return {number} The sum of x and y.
+   */
+  sum(x, y = 0) {
+    if (typeof x !== 'number') {
+      throw new TypeError('Foo.sum(x, [y]): Argument x expected to be a number.');
+    }
+
+    if (y !== null && y !== undefined && typeof y !== 'number') {
+      throw new TypeError('Foo.sum(x, [y]): Argument [y] expected to be a number.');
     }
 
     return x + y;
@@ -491,11 +520,11 @@ class Foo {
    */
   sum(x, y = 0) {
     if (typeof x !== 'number') {
-      throw new TypeError('Argument x must be a number.');
+      throw new TypeError('Foo.sum(x, [y]): Argument x expected to be a number.');
     }
 
     if (y !== null && y !== undefined && typeof y !== 'number') {
-      throw new TypeError('Argument y (optional) must be a number.');
+      throw new TypeError('Foo.sum(x, [y]): Argument [y] expected to be a number.');
     }
 
     return x + y;
@@ -518,8 +547,8 @@ class Foo {
    * @return {number} The sum of x and y.
    */
   sum(x, y = 0) {
-    invariant(!(typeof x !== 'number'), 'Argument x must be a number.');
-    invariant(!(y !== null && y !== undefined && typeof y !== 'number'), 'Argument y (optional) must be a number.');
+    invariant(!(typeof x !== 'number'), 'Foo.sum(x, [y]): Argument x expected to be a number.');
+    invariant(!(y !== null && y !== undefined && typeof y !== 'number'), 'Foo.sum(x, [y]): Argument [y] expected to be a number.');
     return x + y;
   }
 
@@ -540,11 +569,11 @@ class Foo {
    */
   sumArray(arr) {
     if (Object.prototype.toString.call(arr) !== '[object Array]') {
-      throw new TypeError('Argument arr must be an array.');
+      throw new TypeError('Foo.sumArray(arr): Argument arr expected to be an array.');
     }
 
     if (Object.prototype.toString.call(arr) === '[object Array]' && arr.length > 0 && typeof arr[0] !== 'number') {
-      throw new TypeError('Argument arr[0] must be a number.');
+      throw new TypeError('Foo.sumArray(arr): Argument arr[0] expected to be a number.');
     }
 
     return arr.reduce((total, x) => total + x, 0);
@@ -561,15 +590,15 @@ class Foo {
 
   sumArray2(arr) {
     if (arr !== null && arr !== undefined && Object.prototype.toString.call(arr) !== '[object Array]') {
-      throw new TypeError('Argument arr (optional) must be an array.');
+      throw new TypeError('Foo.sumArray2([arr]): Argument [arr] expected to be an array.');
     }
 
     if (Object.prototype.toString.call(arr) === '[object Array]' && arr.length > 0 && Object.prototype.toString.call(arr[0]) !== '[object Array]') {
-      throw new TypeError('Argument arr[0] must be an array.');
+      throw new TypeError('Foo.sumArray2([arr]): Argument arr[0] expected to be an array.');
     }
 
     if (Object.prototype.toString.call(arr) === '[object Array]' && arr.length > 0 && Object.prototype.toString.call(arr[0]) === '[object Array]' && arr[0].length > 0 && typeof arr[0][0] !== 'number') {
-      throw new TypeError('Argument arr[0][0] must be a number.');
+      throw new TypeError('Foo.sumArray2([arr]): Argument arr[0][0] expected to be a number.');
     }
 
     return (arr || []).reduce((total, innerArr) => total + innerArr.reduce((total, x) => total + x, 0), 0);
@@ -593,15 +622,15 @@ class Foo {
    */
   sumObj(obj) {
     if (Object.prototype.toString.call(obj) !== '[object Object]') {
-      throw new TypeError('Argument obj must be an object.');
+      throw new TypeError('Foo.sumObj(obj): Argument obj expected to be an object.');
     }
 
     if (Object.prototype.toString.call(obj) === '[object Object]' && Object.keys && Object.keys(obj)[0] && typeof Object.keys(obj)[0] !== 'string') {
-      throw new TypeError('Argument Object.keys(obj)[0] must be a string.');
+      throw new TypeError('Foo.sumObj(obj): Argument Object.keys(obj)[0] expected to be a string.');
     }
 
     if (Object.prototype.toString.call(obj) === '[object Object]' && Object.keys && Object.keys(obj)[0] && obj[Object.keys(obj)[0]] && typeof obj[Object.keys(obj)[0]] !== 'number') {
-      throw new TypeError('Argument obj[Object.keys(obj)[0]] must be a number.');
+      throw new TypeError('Foo.sumObj(obj): Argument obj[Object.keys(obj)[0]] expected to be a number.');
     }
 
     return Object.keys(obj).reduce((total, key) => total + obj[key], 0);
@@ -618,15 +647,15 @@ class Foo {
 
   sumObj2(obj) {
     if (obj !== null && obj !== undefined && Object.prototype.toString.call(obj) !== '[object Object]') {
-      throw new TypeError('Argument obj (optional) must be an object.');
+      throw new TypeError('Foo.sumObj2(obj): Argument [obj] expected to be an object.');
     }
 
     if (Object.prototype.toString.call(obj) === '[object Object]' && Object.keys && Object.keys(obj)[0] && typeof Object.keys(obj)[0] !== 'string') {
-      throw new TypeError('Argument Object.keys(obj)[0] must be a string.');
+      throw new TypeError('Foo.sumObj2(obj): Argument Object.keys(obj)[0] expected to be a string.');
     }
 
     if (Object.prototype.toString.call(obj) === '[object Object]' && Object.keys && Object.keys(obj)[0] && obj[Object.keys(obj)[0]] && typeof obj[Object.keys(obj)[0]] !== 'number') {
-      throw new TypeError('Argument obj[Object.keys(obj)[0]] must be a number.');
+      throw new TypeError('Foo.sumObj2(obj): Argument obj[Object.keys(obj)[0]] expected to be a number.');
     }
 
     return Object.keys(obj).reduce((total, key) => total + obj[key], 0);
@@ -652,15 +681,15 @@ class Foo {
    */
   toCAB(obj) {
     if (Object.prototype.toString.call(obj) !== '[object Object]') {
-      throw new TypeError('Argument obj must be an object.');
+      throw new TypeError('Foo.toCAB(obj): Argument obj expected to be an object.');
     }
 
     if (Object.prototype.toString.call(obj) === '[object Object]' && 'a' in obj && typeof obj['a'] !== 'number') {
-      throw new TypeError('Argument obj[\\\\'a\\\\'] must be a number.');
+      throw new TypeError('Foo.toCAB(obj): Argument obj[\\\\'a\\\\'] expected to be a number.');
     }
 
     if (Object.prototype.toString.call(obj) === '[object Object]' && 'b' in obj && typeof obj['b'] !== 'string') {
-      throw new TypeError('Argument obj[\\\\'b\\\\'] must be a string.');
+      throw new TypeError('Foo.toCAB(obj): Argument obj[\\\\'b\\\\'] expected to be a string.');
     }
 
     const {
@@ -684,15 +713,15 @@ class Foo {
 
   toCAB2(obj) {
     if (obj !== null && obj !== undefined && Object.prototype.toString.call(obj) !== '[object Object]') {
-      throw new TypeError('Argument obj (optional) must be an object.');
+      throw new TypeError('Foo.toCAB2(obj): Argument [obj] expected to be an object.');
     }
 
     if (Object.prototype.toString.call(obj) === '[object Object]' && 'a' in obj && (typeof obj['a'] !== 'number' || obj['a'] === null)) {
-      throw new TypeError('Argument obj[\\\\'a\\\\'] must be a number.');
+      throw new TypeError('Foo.toCAB2(obj): Argument obj[\\\\'a\\\\'] expected to be a number.');
     }
 
     if (Object.prototype.toString.call(obj) === '[object Object]' && 'b' in obj && typeof obj['b'] !== 'string' && obj['b'] !== null) {
-      throw new TypeError('Argument obj[\\\\'b\\\\'] must be a string.');
+      throw new TypeError('Foo.toCAB2(obj): Argument obj[\\\\'b\\\\'] expected to be a string.');
     }
 
     const {
@@ -726,19 +755,19 @@ class Foo {
    */
   toCBAD(obj, d) {
     if (Object.prototype.toString.call(obj) !== '[object Object]') {
-      throw new TypeError('Argument obj must be an object.');
+      throw new TypeError('Foo.toCBAD(obj, obj.a, [obj.b], obj.c, d): Argument obj expected to be an object.');
     }
 
     if (Object.prototype.toString.call(obj) === '[object Object]' && 'a' in obj && typeof obj['a'] !== 'number') {
-      throw new TypeError('Argument obj[\\\\'a\\\\'] must be a number.');
+      throw new TypeError('Foo.toCBAD(obj, obj.a, [obj.b], obj.c, d): Argument obj[\\\\'a\\\\'] expected to be a number.');
     }
 
     if (Object.prototype.toString.call(obj) === '[object Object]' && 'b' in obj && obj['b'] !== null && obj['b'] !== undefined && typeof obj['b'] !== 'string') {
-      throw new TypeError('Argument obj[\\\\'b\\\\'] (optional) must be a string.');
+      throw new TypeError('Foo.toCBAD(obj, obj.a, [obj.b], obj.c, d): Argument [obj[\\\\'b\\\\']] expected to be a string.');
     }
 
     if (typeof d !== 'string') {
-      throw new TypeError('Argument d must be a string.');
+      throw new TypeError('Foo.toCBAD(obj, obj.a, [obj.b], obj.c, d): Argument d expected to be a string.');
     }
 
     const {
@@ -767,23 +796,23 @@ class Foo {
 
   toCBAD2(obj, d) {
     if (obj !== null && obj !== undefined && Object.prototype.toString.call(obj) !== '[object Object]') {
-      throw new TypeError('Argument obj (optional) must be an object.');
+      throw new TypeError('Foo.toCBAD2(obj, obj.a, obj.inner, obj.inner.b, obj.inner.c, d): Argument [obj] expected to be an object.');
     }
 
     if (Object.prototype.toString.call(obj) === '[object Object]' && 'a' in obj && obj['a'] !== null && obj['a'] !== undefined && typeof obj['a'] !== 'number') {
-      throw new TypeError('Argument obj[\\\\'a\\\\'] (optional) must be a number.');
+      throw new TypeError('Foo.toCBAD2(obj, obj.a, obj.inner, obj.inner.b, obj.inner.c, d): Argument [obj[\\\\'a\\\\']] expected to be a number.');
     }
 
     if (Object.prototype.toString.call(obj) === '[object Object]' && 'inner' in obj && obj['inner'] !== null && obj['inner'] !== undefined && Object.prototype.toString.call(obj['inner']) !== '[object Object]') {
-      throw new TypeError('Argument obj[\\\\'inner\\\\'] (optional) must be an object.');
+      throw new TypeError('Foo.toCBAD2(obj, obj.a, obj.inner, obj.inner.b, obj.inner.c, d): Argument [obj[\\\\'inner\\\\']] expected to be an object.');
     }
 
     if (Object.prototype.toString.call(obj) === '[object Object]' && 'inner' in obj && Object.prototype.toString.call(obj['inner']) === '[object Object]' && 'b' in obj['inner'] && typeof obj['inner']['b'] !== 'string' && obj['inner']['b'] !== null) {
-      throw new TypeError('Argument obj[\\\\'inner\\\\'][\\\\'b\\\\'] must be a string.');
+      throw new TypeError('Foo.toCBAD2(obj, obj.a, obj.inner, obj.inner.b, obj.inner.c, d): Argument obj[\\\\'inner\\\\'][\\\\'b\\\\'] expected to be a string.');
     }
 
     if (typeof d !== 'string') {
-      throw new TypeError('Argument d must be a string.');
+      throw new TypeError('Foo.toCBAD2(obj, obj.a, obj.inner, obj.inner.b, obj.inner.c, d): Argument d expected to be a string.');
     }
 
     const {
@@ -815,7 +844,7 @@ class Foo {
    */
   toString(obj) {
     if (Object.prototype.toString.call(obj) !== '[object Object]') {
-      throw new TypeError('Argument obj must be an object.');
+      throw new TypeError('Foo.toString(obj): Argument obj expected to be an object.');
     }
 
     return obj.toString();
@@ -850,19 +879,19 @@ class Foo {
    */
   generatePersonsHtml(personsList) {
     if (Object.prototype.toString.call(personsList) !== '[object Array]') {
-      throw new TypeError('Argument personsList must be an array.');
+      throw new TypeError('Foo.generatePersonsHtml(personsList): Argument personsList expected to be an array.');
     }
 
     if (Object.prototype.toString.call(personsList) === '[object Array]' && personsList.length > 0 && (Object.prototype.toString.call(personsList[0]) !== '[object Object]' || personsList[0] === null)) {
-      throw new TypeError('Argument personsList[0] must be an object.');
+      throw new TypeError('Foo.generatePersonsHtml(personsList): Argument personsList[0] expected to be an object.');
     }
 
     if (Object.prototype.toString.call(personsList) === '[object Array]' && personsList.length > 0 && Object.prototype.toString.call(personsList[0]) === '[object Object]' && 'firstname' in personsList[0] && typeof personsList[0]['firstname'] !== 'string') {
-      throw new TypeError('Argument personsList[0][\\\\'firstname\\\\'] must be a string.');
+      throw new TypeError('Foo.generatePersonsHtml(personsList): Argument personsList[0][\\\\'firstname\\\\'] expected to be a string.');
     }
 
     if (Object.prototype.toString.call(personsList) === '[object Array]' && personsList.length > 0 && Object.prototype.toString.call(personsList[0]) === '[object Object]' && 'surname' in personsList[0] && typeof personsList[0]['surname'] !== 'string') {
-      throw new TypeError('Argument personsList[0][\\\\'surname\\\\'] must be a string.');
+      throw new TypeError('Foo.generatePersonsHtml(personsList): Argument personsList[0][\\\\'surname\\\\'] expected to be a string.');
     }
 
     return '<ul>' + personsList.reduce((acc, value) => {
@@ -894,15 +923,15 @@ class Foo {
    */
   getFullName(person) {
     if (Object.prototype.toString.call(person) !== '[object Object]') {
-      throw new TypeError('Argument person must be an object.');
+      throw new TypeError('Foo.getFullName(person): Argument person expected to be an object.');
     }
 
     if (Object.prototype.toString.call(person) === '[object Object]' && 'firstname' in person && typeof person['firstname'] !== 'string') {
-      throw new TypeError('Argument person[\\\\'firstname\\\\'] must be a string.');
+      throw new TypeError('Foo.getFullName(person): Argument person[\\\\'firstname\\\\'] expected to be a string.');
     }
 
     if (Object.prototype.toString.call(person) === '[object Object]' && 'surname' in person && typeof person['surname'] !== 'string') {
-      throw new TypeError('Argument person[\\\\'surname\\\\'] must be a string.');
+      throw new TypeError('Foo.getFullName(person): Argument person[\\\\'surname\\\\'] expected to be a string.');
     }
 
     return person.firstname + ' ' + person.surname;
@@ -938,19 +967,19 @@ class Foo {
    */
   getPersonInfo(person) {
     if (Object.prototype.toString.call(person) !== '[object Object]') {
-      throw new TypeError('Argument person must be an object.');
+      throw new TypeError('Foo.getPersonInfo(person): Argument person expected to be an object.');
     }
 
     if (Object.prototype.toString.call(person) === '[object Object]' && 'firstname' in person && typeof person['firstname'] !== 'string') {
-      throw new TypeError('Argument person[\\\\'firstname\\\\'] must be a string.');
+      throw new TypeError('Foo.getPersonInfo(person): Argument person[\\\\'firstname\\\\'] expected to be a string.');
     }
 
     if (Object.prototype.toString.call(person) === '[object Object]' && 'surname' in person && typeof person['surname'] !== 'string') {
-      throw new TypeError('Argument person[\\\\'surname\\\\'] must be a string.');
+      throw new TypeError('Foo.getPersonInfo(person): Argument person[\\\\'surname\\\\'] expected to be a string.');
     }
 
     if (Object.prototype.toString.call(person) === '[object Object]' && 'age' in person && typeof person['age'] !== 'number') {
-      throw new TypeError('Argument person[\\\\'age\\\\'] must be a number.');
+      throw new TypeError('Foo.getPersonInfo(person): Argument person[\\\\'age\\\\'] expected to be a number.');
     }
 
     const {

@@ -1,6 +1,5 @@
 import parse from 'comment-parser';
 import { parse as parseType } from 'jsdoctypeparser';
-import { taggedTemplateExpression } from '@babel/types';
 
 export default class Comment {
 	static parseTagType(tag) {
@@ -34,6 +33,12 @@ export default class Comment {
 
 	getParams() {
 		return this.findTags('param').map(Comment.parseTagType);
+	}
+
+	getParamsList() {
+		return this.getParams()
+			.map(param => (param.optional ? `[${param.name}]` : param.name))
+			.join(', ');
 	}
 
 	hasTag(name) {

@@ -36,12 +36,32 @@ class TypeChecker {
 								node && node.type === 'ClassDeclaration'
 						) || {};
 					let properClassComment;
+					let className = null;
 
 					if (classNode) {
+						className = (classNode.id && classNode.id.name) || null;
 						properClassComment = this._findProperComment(
 							classNode,
 							options
 						);
+
+						if (!properClassComment) {
+							const { node: exportDefaultNode } =
+								path.findParent(
+									({ node }) =>
+										node &&
+										node.type ===
+											'ExportDefaultDeclaration' &&
+										node.declaration === classNode
+								) || {};
+
+							if (exportDefaultNode) {
+								properClassComment = this._findProperComment(
+									exportDefaultNode,
+									options
+								);
+							}
+						}
 					}
 
 					const { node } = path;
@@ -55,10 +75,14 @@ class TypeChecker {
 						return;
 					}
 
+					const methodName =
+						(node && node.key && node.key.name) || null;
 					const generatedNodes = codeGenerator.generateNodes(
 						options.checkingTemplate,
 						properComment,
-						path
+						path,
+						className,
+						methodName
 					);
 
 					if (generatedNodes) {

@@ -659,6 +659,31 @@ describe('main', () => {
 		expect(code).toMatchSnapshot();
 	});
 
+	it('should prepend a type checking to Foo#sum() because the checker tag is present on the export default level', () => {
+		const { code } = transform(
+			`
+			/**
+			 * Class Foo.
+			 *
+			 * @typechecked
+			 */
+			export default class Foo {
+				/**
+				 * Returns the sum of x, y (optional).
+				 *
+				 * @param {number} x The first number.
+				 * @param {number} [y=0] The second number.
+				 * @return {number} The sum of x and y.
+				 */
+				sum(x, y = 0) {
+					return x + y;
+				}
+			}`,
+			TRANSFORM_OPTIONS
+		);
+		expect(code).toMatchSnapshot();
+	});
+
 	it(`should prepend a type checking to Foo#sum() because the checker tag is set to 'bar'`, () => {
 		const { code } = transform(
 			`
@@ -708,7 +733,7 @@ describe('main', () => {
 						plugin,
 						{
 							checkingTemplate: `
-								invariant(!(\${condition}), \${errorMessage});`
+								invariant(!(\${condition}), '\${className}.\${methodName}(\${paramsList}): Argument \${paramName} expected to be \${expectedType}.');`
 						}
 					]
 				]
@@ -742,7 +767,7 @@ describe('main', () => {
 						plugin,
 						{
 							checkingTemplate: `
-								invariant(!(\${condition}), \${errorMessage});`,
+								invariant(!(\${condition}), '\${className}.\${methodName}(\${paramsList}): Argument \${paramName} expected to be \${expectedType}.');`,
 							importTemplate: `
 								import invariant from 'invariant';`
 						}
@@ -780,7 +805,7 @@ describe('main', () => {
 						plugin,
 						{
 							checkingTemplate: `
-								invariant(!(\${condition}), \${errorMessage});`,
+								invariant(!(\${condition}), '\${className}.\${methodName}(\${paramsList}): Argument \${paramName} expected to be \${expectedType}.');`,
 							importTemplate: `
 								import invariant from 'invariant';`
 						}
@@ -818,7 +843,7 @@ describe('main', () => {
 						plugin,
 						{
 							checkingTemplate: `
-								invariant(!(\${condition}), \${errorMessage});`,
+								invariant(!(\${condition}), '\${className}.\${methodName}(\${paramsList}): Argument \${paramName} expected to be \${expectedType}.');`,
 							importTemplate: `
 								import invariant from 'invariant';`
 						}
@@ -856,7 +881,7 @@ describe('main', () => {
 						plugin,
 						{
 							checkingTemplate: `
-								invariant(!(\${condition}), \${errorMessage});`,
+								invariant(!(\${condition}), '\${className}.\${methodName}(\${paramsList}): Argument \${paramName} expected to be \${expectedType}.');`,
 							importTemplate: `
 								import invariant from 'invariant';`
 						}

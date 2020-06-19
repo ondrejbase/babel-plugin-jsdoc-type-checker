@@ -1,7 +1,7 @@
 const CHECKER_TAG = 'typechecked';
 const CHECKING_TEMPLATE = `
 	if (\${condition}) {
-		throw new TypeError(\${errorMessage});
+		throw new TypeError('\${className}.\${methodName}(\${paramsList}): Argument \${paramName} expected to be \${expectedType}.');
 	}`;
 const IMPORT_TEMPLATE = '';
 const SUPPORTED_ENVIRONMENTS = ['dev', 'development', 'test'];

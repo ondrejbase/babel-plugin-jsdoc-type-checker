@@ -3,8 +3,14 @@ import fillTemplate from 'es6-dynamic-template';
 import Comment from './Comment';
 
 class CodeGenerator {
-	generateNodes(template, comment, path) {
-		const code = this.generateCode(template, comment, path);
+	generateNodes(template, comment, path, className, methodName) {
+		const code = this.generateCode(
+			template,
+			comment,
+			path,
+			className,
+			methodName
+		);
 
 		if (!code) {
 			return null;
@@ -27,7 +33,7 @@ class CodeGenerator {
 		}
 	}
 
-	generateCode(template, comment, path) {
+	generateCode(template, comment, path, className, methodName) {
 		if (!template || typeof template !== 'string') {
 			throw new TypeError('Argument template must be a string.');
 		}
@@ -44,6 +50,7 @@ class CodeGenerator {
 			return null;
 		}
 
+		const paramsList = comment.getParamsList();
 		const codeFragments = [];
 		this._joinObjectsWithProperties(params).forEach((param, index) => {
 			const { conditions, errorMessages } =
@@ -58,13 +65,15 @@ class CodeGenerator {
 			}
 
 			conditions.forEach((condition, index) => {
+				const { expectedType, paramName } = errorMessages[index];
 				codeFragments.push(
 					fillTemplate(template, {
+						className,
 						condition,
-						errorMessage: `'${errorMessages[index].replace(
-							/'/g,
-							"\\'"
-						)}'`
+						expectedType,
+						methodName,
+						paramsList,
+						paramName: paramName.replace(/'/g, "\\'")
 					})
 				);
 			});
@@ -128,11 +137,10 @@ class CodeGenerator {
 							`typeof ${name} !== 'number'` +
 							conditionSuffix
 					);
-					errorMessages.push(
-						`Argument ${name}${
-							optional ? ' (optional)' : ''
-						} must be a number.`
-					);
+					errorMessages.push({
+						expectedType: `a ${typeName}`,
+						paramName: optional ? `[${name}]` : name
+					});
 					break;
 				case 'string':
 					conditions.push(
@@ -140,11 +148,10 @@ class CodeGenerator {
 							`typeof ${name} !== 'string'` +
 							conditionSuffix
 					);
-					errorMessages.push(
-						`Argument ${name}${
-							optional ? ' (optional)' : ''
-						} must be a string.`
-					);
+					errorMessages.push({
+						expectedType: `a ${typeName}`,
+						paramName: optional ? `[${name}]` : name
+					});
 					break;
 				case 'boolean':
 					conditions.push(
@@ -152,11 +159,10 @@ class CodeGenerator {
 							`typeof ${name} !== 'boolean'` +
 							conditionSuffix
 					);
-					errorMessages.push(
-						`Argument ${name}${
-							optional ? ' (optional)' : ''
-						} must be a boolean.`
-					);
+					errorMessages.push({
+						expectedType: `a ${typeName}`,
+						paramName: optional ? `[${name}]` : name
+					});
 					break;
 				case 'function':
 					conditions.push(
@@ -164,11 +170,10 @@ class CodeGenerator {
 							`typeof ${name} !== 'function'` +
 							conditionSuffix
 					);
-					errorMessages.push(
-						`Argument ${name}${
-							optional ? ' (optional)' : ''
-						} must be a function.`
-					);
+					errorMessages.push({
+						expectedType: `a ${typeName}`,
+						paramName: optional ? `[${name}]` : name
+					});
 					break;
 				case 'array':
 					conditions.push(
@@ -177,11 +182,10 @@ class CodeGenerator {
 							`.call(${name}) !== '[object Array]'` +
 							conditionSuffix
 					);
-					errorMessages.push(
-						`Argument ${name}${
-							optional ? ' (optional)' : ''
-						} must be an array.`
-					);
+					errorMessages.push({
+						expectedType: `an ${typeName}`,
+						paramName: optional ? `[${name}]` : name
+					});
 					break;
 				case 'object':
 					conditions.push(
@@ -190,11 +194,10 @@ class CodeGenerator {
 							`.call(${name}) !== '[object Object]'` +
 							conditionSuffix
 					);
-					errorMessages.push(
-						`Argument ${name}${
-							optional ? ' (optional)' : ''
-						} must be an object.`
-					);
+					errorMessages.push({
+						expectedType: `an ${typeName}`,
+						paramName: optional ? `[${name}]` : name
+					});
 					break;
 				default: {
 					const typedefResult = this._getConditionsAndMessagesFromTypedef(
@@ -495,9 +498,12 @@ class CodeGenerator {
 					conditions.push(
 						`(${leftCondition}) && (${rightCondition})`
 					);
-					errorMessages.push(
-						`${leftErrorMessage} OR ${rightErrorMessage}`
-					);
+					errorMessages.push({
+						expectedType: `${leftErrorMessage.expectedType} or ${
+							rightErrorMessage.expectedType
+						}`,
+						paramName: leftErrorMessage.paramName
+					});
 				} else if (leftCondition && leftErrorMessage) {
 					conditions.push(leftCondition);
 					errorMessages.push(rightCondition);
