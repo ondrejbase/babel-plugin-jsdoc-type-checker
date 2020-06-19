@@ -32,7 +32,7 @@
 		"babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
 		"comment-parser": "^0.5.0",
 		"es6-dynamic-template": "^1.0.5",
-		"gulp": "^3.9.1",
+		"gulp": "^4.0.2",
 		"gulp-babel": "^8.0.0",
 		"jest": "^23.6.0",
 		"jsdoctypeparser": "^2.0.0-alpha-8"
