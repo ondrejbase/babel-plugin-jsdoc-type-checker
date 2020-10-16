@@ -1,6 +1,6 @@
 {
 	"name": "babel-plugin-jsdoc-type-checker",
-	"version": "3.0.2",
+	"version": "3.0.3",
 	"description": "Babel plugin for type checking based on JSDoc comments in selected environments.",
 	"main": "./dist/main.js",
 	"scripts": {
@@ -31,7 +31,7 @@
 		"@babel/parser": "^7.2.0",
 		"babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
 		"comment-parser": "^0.5.0",
-		"es6-dynamic-template": "^1.0.5",
+		"es6-dynamic-template": "^2.0.0",
 		"gulp": "^4.0.2",
 		"gulp-babel": "^8.0.0",
 		"jest": "^23.6.0",
